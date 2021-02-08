@@ -2,8 +2,8 @@
 {
     public enum TypeOfUser
     {
-        Driver,
-        Customer
+        Driver = 1,
+        Customer = 2
     }
 
     public class User
@@ -16,6 +16,8 @@
         public string StreetNumber { get; set; }
         public string PostCode { get; set; }
         public string City { get; set; }
+        public double lat { get; set; }
+        public double lon { get; set; }
         public TypeOfUser Type { get; set; }
     }
 }

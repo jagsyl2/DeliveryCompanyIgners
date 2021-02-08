@@ -10,7 +10,7 @@ namespace DeliveryCompany.BusinessLayer
     {
         public List<JsonLocationData> ChangeLocationToCoordinates(User user);
         public Dictionary<int, double> CountDistancesFromPackageToCourier(List<User> couriers, Package package);
-        public string GetCoordinatesForAddress(string country, string city, string street, string building);
+        public string GetCoordinatesForAddress(string country, string city, string postcode, string street, string building);
         public double Location(JsonLocationData originLocation, JsonLocationData destinationLocation);
     }
 
@@ -20,7 +20,14 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<JsonLocationData> ChangeLocationToCoordinates(User user)
         {
-            var location = GetCoordinatesForAddress("Polska", user.City, user.Street, user.StreetNumber);
+            var location = GetCoordinatesForAddress("Polska", user.City, user.PostCode, user.Street, user.StreetNumber);
+            var locationCoordinates = _jsonSerializer.Deserialize(location);
+            return locationCoordinates;
+        }
+
+        public List<JsonLocationData> ChangeLocationToCoordinates(Recipient recipient)
+        {
+            var location = GetCoordinatesForAddress("Polska", recipient.City, recipient.PostCode, recipient.Street, recipient.StreetNumber);
             var locationCoordinates = _jsonSerializer.Deserialize(location);
             return locationCoordinates;
         }
@@ -41,9 +48,9 @@ namespace DeliveryCompany.BusinessLayer
             return distances;
         }
 
-        public string GetCoordinatesForAddress(string country, string city, string street, string building)
+        public string GetCoordinatesForAddress(string country, string city, string postalcode, string street, string building)
         {
-            var client = new RestClient($"https://nominatim.openstreetmap.org/?q={street}+{building}+{city}+{country}&format=json&limit=1");
+            var client = new RestClient($"https://nominatim.openstreetmap.org/?q={street}+{building}+{city}+{country}&{postalcode}&polygon_geojson=1&format=json&limit=1");
             var request = new RestRequest(Method.GET);
             IRestResponse response = client.Execute(request);
 

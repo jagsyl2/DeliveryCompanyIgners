@@ -10,12 +10,6 @@ namespace DeliveryCompany.BusinessLayer
     public interface IWaybillsService
     {
         public void CreateWaybills();
-        public List<Package> PreparingTodaysParcelsForShippin();
-        public List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity);
-        public void UpdatePackages(List<Package> packages);
-        public Dictionary<int, int> GetAllVehiclesLoadCapacity();
-        public void SerializeWaybills(List<Package> packages);
-        public int FindTheNearestCourier(Dictionary<int, double> distances);
     }
 
     public class WaybillsService : IWaybillsService
@@ -61,7 +55,7 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public List<Package> PreparingTodaysParcelsForShippin()
+        private List<Package> PreparingTodaysParcelsForShippin()
         {
             var packages = _packageService.CheckPackagesAwaitingPosting();      //pobieram paczki, których status jest "oczek. na nadanie". w przypadku braku paczek, nie tworzymy listy.
             if (packages.Count < 1)
@@ -88,7 +82,7 @@ namespace DeliveryCompany.BusinessLayer
             return AssignPackagesToCouriers(packages, couriers, vehiclesLoadCapacity);      //przypisujemy paczki do kurierów
         }
 
-        public List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity)
+        private List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity)
         {
             var todaysPackages = new List<Package>();
 
@@ -129,6 +123,9 @@ namespace DeliveryCompany.BusinessLayer
                     continue;
                 }
 
+
+
+
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
                 package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
@@ -139,7 +136,7 @@ namespace DeliveryCompany.BusinessLayer
             return todaysPackages;
         }
 
-        public void UpdatePackages(List<Package> packages)
+        private void UpdatePackages(List<Package> packages)
         {
             foreach (var package in packages)
             {
@@ -148,7 +145,7 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public Dictionary<int, int> GetAllVehiclesLoadCapacity()
+        private Dictionary<int, int> GetAllVehiclesLoadCapacity()
         {
             var vehiclesLoadCapacity = new Dictionary<int, int>();
             var vehicles = _vehicleService.GetAllVehicles();
@@ -161,7 +158,7 @@ namespace DeliveryCompany.BusinessLayer
             return vehiclesLoadCapacity;
         }
 
-        public void SerializeWaybills(List<Package> packages)
+        private void SerializeWaybills(List<Package> packages)
         {
             var slnPath = AppDomain.CurrentDomain.BaseDirectory;
             var path = Directory.CreateDirectory(slnPath + "shipping_lists");
@@ -180,7 +177,7 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public int FindTheNearestCourier(Dictionary<int, double> distances)
+        private int FindTheNearestCourier(Dictionary<int, double> distances)
         {
             return distances
                 .Where(x => x.Value == distances.Values.Min())

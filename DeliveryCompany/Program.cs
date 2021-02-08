@@ -86,6 +86,10 @@ namespace DeliveryCompany
         private void AddUser()
         {
             var user = _ioHelperRegisterUser.CreateNewUser();
+            if (user == null)
+            {
+                return;
+            }
 
             _userService.Add(user);
 

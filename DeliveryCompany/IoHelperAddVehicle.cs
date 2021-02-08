@@ -24,6 +24,7 @@ namespace DeliveryCompany
                 Model = _ioHelper.GetStringFromUser("Enter the car model:"),
                 RegistrationNumber = _ioHelper.GetStringFromUser("Enter the registration number:"),
                 LoadCapacity = _ioHelper.GetIntFromUser("Enter the load capacity of the car [kg]:"),
+                AverageSpeed = _ioHelper.GetIntFromUser("Enter average speed of the car [km/h]:"),
                 DriverId = driverId,
             };
 

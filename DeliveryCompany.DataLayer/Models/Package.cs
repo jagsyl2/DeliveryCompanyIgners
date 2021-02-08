@@ -28,13 +28,16 @@ namespace DeliveryCompany.DataLayer.Models
         public DateTime DateOfRegistration { get; set; }
         public StateOfPackage State { get; set; }
         public int VehicleNumber { get; set; }
-        public string RecipientName { get; set; }
-        public string RecipientSurname { get; set; }
-        public string RecipientEmail { get; set; }
-        public string RecipientStreet { get; set; }
-        public string RecipientStreetNumber { get; set; }
-        public string RecipientCity { get; set; }
-        public string RecipientPostCode { get; set; }
+        public Recipient recipient { get; set; }
+        //public string RecipientName { get; set; }
+        //public string RecipientSurname { get; set; }
+        //public string RecipientEmail { get; set; }
+        //public string RecipientStreet { get; set; }
+        //public string RecipientStreetNumber { get; set; }
+        //public string RecipientCity { get; set; }
+        //public string RecipientPostCode { get; set; }
+        //public double RecipientLat { get; set; }
+        //public double RecipientLon { get; set; }
 
         public Package()
         {
