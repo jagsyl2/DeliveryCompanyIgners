@@ -128,39 +128,53 @@ namespace DeliveryCompany.BusinessLayer
                     continue;
                 }
 
-                var value = courierLocationAlongTheWay[courierId];
-                if (value.FirstPackageForCourier == true)
+                var currentCuriersLocation = courierLocationAlongTheWay[courierId];
+                if (currentCuriersLocation.FirstPackageForCourier == true)
                 {
                     var firstPackageSender    = new LocationCoordinates() { Lat = package.Sender.lat,    Lon = package.Sender.lon };
                     var firstPackageRecipient = new LocationCoordinates() { Lat = package.Recipient.Lat, Lon = package.Recipient.Lon };
 
-                    var todayVehicleRange = new List<double>();
-                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(value.StartingPlace,   firstPackageSender));
-                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageSender,    firstPackageRecipient));
-                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageRecipient, value.StartingPlace));
+                    var vehicleRangeWithPackage = new List<double>();
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.StartingPlace,   firstPackageSender));
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageSender,    firstPackageRecipient));
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageRecipient, currentCuriersLocation.StartingPlace));
 
-                    var distance = todayVehicleRange.Sum();
+                    var distance = vehicleRangeWithPackage.Sum();
 
                     if (distance > vehicleRange[vehicle.Id])
                     {
                         break;
                     }
-                    vehicleRange[vehicle.Id] -= todayVehicleRange[0];
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
 
-                    var currentCourierLocation = new CourierLocationsAlongTheWay()
-                    {
-                        FirstPackageForCourier = false,
-                        CourierCurrentLocation = firstPackageSender,
-                        RecipientFirstPackage = firstPackageRecipient,
-                        RecipientCurrentPackage = firstPackageRecipient
-                    };
-                    courierLocationAlongTheWay[courierId] = currentCourierLocation;
+                    courierLocationAlongTheWay[courierId].CourierCurrentLocation = firstPackageSender;
+                    courierLocationAlongTheWay[courierId].RecipientFirstPackage = firstPackageRecipient;
+                    courierLocationAlongTheWay[courierId].RecipientCurrentPackage = firstPackageRecipient;
+                    courierLocationAlongTheWay[courierId].FirstPackageForCourier = false;
                 }
                 else
                 {
+                    var packageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var packageRecipient = new LocationCoordinates() { Lat = package.Recipient.Lat, Lon = package.Recipient.Lon };
 
+                    var vehicleRangeWithPackage = new List<double>();
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.CourierCurrentLocation, packageSender));
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(packageSender, currentCuriersLocation.RecipientFirstPackage));
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.RecipientFirstPackage, packageRecipient));
+                    vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(packageRecipient, currentCuriersLocation.StartingPlace));
+
+                    var distance = vehicleRangeWithPackage.Sum();
+
+                    if (distance > vehicleRange[vehicle.Id])
+                    {
+                        continue;
+                    }
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[2];
+
+                    courierLocationAlongTheWay[courierId].CourierCurrentLocation = packageSender;
+                    courierLocationAlongTheWay[courierId].RecipientCurrentPackage = packageRecipient;
                 }
-                var currentVehicleRange = vehicleRange[vehicle.Id];
 
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 

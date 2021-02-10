@@ -18,7 +18,7 @@ namespace DeliveryCompany.BusinessLayer.ScheduledTask
                   (s =>
                     s.WithIntervalInHours(24)
                     .OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0))
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(22, 26))
                   )
                 .Build();
 
