@@ -39,6 +39,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Packages
                     .Include(x => x.Sender)
+                    .Include(x => x.Recipient)
                     .Where(x => x.State == StateOfPackage.AwaitingPosting)
                     .ToList();
             }

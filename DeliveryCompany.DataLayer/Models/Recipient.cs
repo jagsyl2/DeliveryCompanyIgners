@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeliveryCompany.DataLayer.Models
+﻿namespace DeliveryCompany.DataLayer.Models
 {
     public class Recipient
     {
@@ -14,6 +10,7 @@ namespace DeliveryCompany.DataLayer.Models
         public string StreetNumber { get; set; }
         public string City { get; set; }
         public string PostCode { get; set; }
+        //public LocationCoordinates locationCoordinates { get; set; }
         public double Lat { get; set; }
         public double Lon { get; set; }
     }

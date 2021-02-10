@@ -1,4 +1,6 @@
-﻿using DeliveryCompany.BusinessLayer.Serializers;
+﻿using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Models;
+using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -85,19 +87,22 @@ namespace DeliveryCompany.BusinessLayer
         private List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity)
         {
             var todaysPackages = new List<Package>();
+            var vehicleRange = GetAllVehiclesRange();
+            var courierLocationAlongTheWay = GetAllCouriersLocationCoordinates();
 
             foreach (var package in packages)
             {
-                var distances = _locationService.CountDistancesFromPackageToCourier(couriers, package);         //każdej paczce, która oczekuje na nadanie obliczam odległości od wszystkich kurierów 
+                var distances = _locationService.CountDistancesFromPackageToCouriers(couriers, package);         //każdej paczce, która oczekuje na nadanie obliczam odległości od wszystkich kurierów 
                 if (distances.Count == 0)
                 {
                     continue;
                 }
 
                 Vehicle vehicle;
+                int courierId;
                 do
                 {
-                    var courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
+                    courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
 
                     vehicle = _vehicleService.GetVehicle(courierId);                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
                     if (vehicle == null)                                                                        //zabezpieczam się też na wypadek gdyby kurier był na tyle nowy, że jeszcze nie dano mu samochodu
@@ -123,8 +128,39 @@ namespace DeliveryCompany.BusinessLayer
                     continue;
                 }
 
+                var value = courierLocationAlongTheWay[courierId];
+                if (value.FirstPackageForCourier == true)
+                {
+                    var firstPackageSender    = new LocationCoordinates() { Lat = package.Sender.lat,    Lon = package.Sender.lon };
+                    var firstPackageRecipient = new LocationCoordinates() { Lat = package.Recipient.Lat, Lon = package.Recipient.Lon };
 
+                    var todayVehicleRange = new List<double>();
+                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(value.StartingPlace,   firstPackageSender));
+                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageSender,    firstPackageRecipient));
+                    todayVehicleRange.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageRecipient, value.StartingPlace));
 
+                    var distance = todayVehicleRange.Sum();
+
+                    if (distance > vehicleRange[vehicle.Id])
+                    {
+                        break;
+                    }
+                    vehicleRange[vehicle.Id] -= todayVehicleRange[0];
+
+                    var currentCourierLocation = new CourierLocationsAlongTheWay()
+                    {
+                        FirstPackageForCourier = false,
+                        CourierCurrentLocation = firstPackageSender,
+                        RecipientFirstPackage = firstPackageRecipient,
+                        RecipientCurrentPackage = firstPackageRecipient
+                    };
+                    courierLocationAlongTheWay[courierId] = currentCourierLocation;
+                }
+                else
+                {
+
+                }
+                var currentVehicleRange = vehicleRange[vehicle.Id];
 
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
@@ -136,6 +172,76 @@ namespace DeliveryCompany.BusinessLayer
             return todaysPackages;
         }
 
+        private Dictionary<int, CourierLocationsAlongTheWay> GetAllCouriersLocationCoordinates()
+        {
+            var courierLocationAlongTheWay = new Dictionary<int, CourierLocationsAlongTheWay>();
+            var couriers = _userService.GetAllDrivers();
+
+            foreach (var courier in couriers)
+            {
+                var courierLocations = new CourierLocationsAlongTheWay()
+                {
+                    StartingPlace = new LocationCoordinates { Lat = courier.lat, Lon = courier.lon },
+                };
+                courierLocationAlongTheWay.Add(courier.Id, courierLocations);
+            }
+
+            return courierLocationAlongTheWay;
+        }
+
+
+
+        //private List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity)
+        //{
+        //    var todaysPackages = new List<Package>();
+
+        //    foreach (var package in packages)
+        //    {
+        //        var distances = _locationService.CountDistancesFromPackageToCourier(couriers, package);         //każdej paczce, która oczekuje na nadanie obliczam odległości od wszystkich kurierów 
+        //        if (distances.Count == 0)
+        //        {
+        //            continue;
+        //        }
+
+        //        Vehicle vehicle;
+        //        do
+        //        {
+        //            var courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
+
+        //            vehicle = _vehicleService.GetVehicle(courierId);                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
+        //            if (vehicle == null)                                                                        //zabezpieczam się też na wypadek gdyby kurier był na tyle nowy, że jeszcze nie dano mu samochodu
+        //            {
+        //                distances.Remove(courierId);
+        //            }
+        //            if (distances.Count == 0)                                                                   //warunek, który zadziała jeśli z jakiegoś powodu żaden kurier nie będzie miał przypisanego samochodu 
+        //            {
+        //                Console.WriteLine();
+        //                Console.WriteLine($"\tWaybill info for {package.Id}: We are very sorry, our company is just developing in your region.");
+        //                break;
+        //            }
+        //        } while (vehicle == null);
+
+        //        if (vehicle == null)
+        //        {
+        //            continue;
+        //        }
+
+        //        var currentLoadCapacity = vehiclesLoadCapacity[vehicle.Id];
+        //        if (currentLoadCapacity < (int)package.Size)                                                    //jeśli paczka nie miesci się do samochodu, zostawiam ją na kolejny dzień
+        //        {
+        //            continue;
+        //        }
+
+        //        vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
+
+        //        package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
+
+        //        todaysPackages.Add(package);                                                                    //tworzę listę paczek, które dzisiaj będą podróżowały
+        //    }
+
+        //    return todaysPackages;
+        //}
+
         private void UpdatePackages(List<Package> packages)
         {
             foreach (var package in packages)
@@ -143,6 +249,21 @@ namespace DeliveryCompany.BusinessLayer
                 package.State = StateOfPackage.Given;
                 _packageService.Update(package);
             }
+        }
+
+        private Dictionary<int, double> GetAllVehiclesRange()
+        {
+            var vehiclesRange = new Dictionary<int, double>();
+            var vehicles = _vehicleService.GetAllVehicles();
+            const int courierWorkingTime = 10;
+
+            foreach (var vehicle in vehicles)
+            {
+                var range = vehicle.AverageSpeed*courierWorkingTime;
+                vehiclesRange.Add(vehicle.Id, range);
+            }
+
+            return vehiclesRange;
         }
 
         private Dictionary<int, int> GetAllVehiclesLoadCapacity()

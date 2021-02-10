@@ -16,6 +16,7 @@
         public string StreetNumber { get; set; }
         public string PostCode { get; set; }
         public string City { get; set; }
+        //public LocationCoordinates LocationCoordinates {get;set;}
         public double lat { get; set; }
         public double lon { get; set; }
         public TypeOfUser Type { get; set; }

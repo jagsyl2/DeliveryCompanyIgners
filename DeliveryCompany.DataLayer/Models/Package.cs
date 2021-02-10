@@ -28,7 +28,7 @@ namespace DeliveryCompany.DataLayer.Models
         public DateTime DateOfRegistration { get; set; }
         public StateOfPackage State { get; set; }
         public int VehicleNumber { get; set; }
-        public Recipient recipient { get; set; }
+        public Recipient Recipient { get; set; }
         //public string RecipientName { get; set; }
         //public string RecipientSurname { get; set; }
         //public string RecipientEmail { get; set; }

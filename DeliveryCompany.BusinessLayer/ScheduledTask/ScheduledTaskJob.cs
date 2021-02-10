@@ -1,4 +1,5 @@
-﻿using DeliveryCompany.BusinessLayer.Serializers;
+﻿using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Serializers;
 using Quartz;
 using System;
 using System.Threading.Tasks;

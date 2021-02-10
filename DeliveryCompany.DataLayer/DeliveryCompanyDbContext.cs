@@ -11,7 +11,7 @@ namespace DeliveryCompany.DataLayer
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.;Database=DeliveryCompanyIgners_Dev;Trusted_Connection=True");
+            optionsBuilder.UseSqlServer(@"Server=.;Database=DeliveryCompanyIgners_Dev3;Trusted_Connection=True");
         }
     }
 }

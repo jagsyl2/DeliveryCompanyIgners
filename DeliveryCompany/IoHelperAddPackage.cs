@@ -1,4 +1,4 @@
-﻿using DeliveryCompany.BusinessLayer;
+﻿using DeliveryCompany.BusinessLayer.Distances;
 using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace DeliveryCompany
                 DateOfRegistration = DateTime.Now,
                 State = StateOfPackage.AwaitingPosting,
 
-                recipient = new Recipient
+                Recipient = new Recipient
                 {
                     Name = _ioHelper.GetStringFromUser("Enter the name of the recipient:"),
                     Surname = _ioHelper.GetStringFromUser("Enter the surname of the recipient:"),
@@ -44,9 +44,9 @@ namespace DeliveryCompany
 
             try
             {
-                var locationCoordinates = _locationService.ChangeLocationToCoordinates(newPackage.recipient);
-                newPackage.recipient.Lat = locationCoordinates[0].lat;
-                newPackage.recipient.Lon = locationCoordinates[0].lon;
+                var locationCoordinates = _locationService.ChangeLocationToCoordinates(newPackage.Recipient);
+                newPackage.Recipient.Lat = locationCoordinates.Lat;
+                newPackage.Recipient.Lon = locationCoordinates.Lon;
             }
             catch (Exception)
             {

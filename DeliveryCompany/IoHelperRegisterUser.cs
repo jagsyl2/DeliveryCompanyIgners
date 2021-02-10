@@ -1,4 +1,4 @@
-﻿using DeliveryCompany.BusinessLayer;
+﻿using DeliveryCompany.BusinessLayer.Distances;
 using DeliveryCompany.DataLayer.Models;
 using System;
 
@@ -28,8 +28,8 @@ namespace DeliveryCompany
             try
             {
                 var locationCoordinates = _locationService.ChangeLocationToCoordinates(newUser);
-                newUser.lat = locationCoordinates[0].lat;
-                newUser.lon = locationCoordinates[0].lon;
+                newUser.lat = locationCoordinates.Lat;
+                newUser.lon = locationCoordinates.Lon;
             }
             catch (Exception)
             {
