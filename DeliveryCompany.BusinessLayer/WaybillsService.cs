@@ -48,7 +48,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 SerializeWaybills(todaysPackages);                          //serializację wykonuje dla każdego samochoddu po kolei, wyszukując na liście paczek z danego dnia czy jakaś została przypisana do samochodu
 
-                UpdatePackages(todaysPackages);                             //po stworzeniu list przewozowych aktualizuję w bazie danych status na "nadana" oraz dopisuje nr samochodu, którym podrużują
+                _packageService.UpdatePackages(todaysPackages, StateOfPackage.Given);   //po stworzeniu list przewozowych aktualizuję w bazie danych status na "nadana" oraz dopisuje nr samochodu, którym podrużują
             }
             catch (Exception)
             {                                                               //w przypadku problemów dostaje informację, że nie wygenerował listu przewozowego
@@ -59,7 +59,7 @@ namespace DeliveryCompany.BusinessLayer
 
         private List<Package> PreparingTodaysParcelsForShippin()
         {
-            var packages = _packageService.CheckPackagesAwaitingPosting();      //pobieram paczki, których status jest "oczek. na nadanie". w przypadku braku paczek, nie tworzymy listy.
+            var packages = _packageService.GetPackagesWithStatus(StateOfPackage.AwaitingPosting);      //pobieram paczki, których status jest "oczek. na nadanie". w przypadku braku paczek, nie tworzymy listy.
             if (packages.Count < 1)
             {
                 return null;
@@ -132,7 +132,7 @@ namespace DeliveryCompany.BusinessLayer
                 if (currentCuriersLocation.FirstPackageForCourier == true)
                 {
                     var firstPackageSender    = new LocationCoordinates() { Lat = package.Sender.lat,    Lon = package.Sender.lon };
-                    var firstPackageRecipient = new LocationCoordinates() { Lat = package.Recipient.Lat, Lon = package.Recipient.Lon };
+                    var firstPackageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     var vehicleRangeWithPackage = new List<double>();
                     vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.StartingPlace,   firstPackageSender));
@@ -155,7 +155,7 @@ namespace DeliveryCompany.BusinessLayer
                 else
                 {
                     var packageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
-                    var packageRecipient = new LocationCoordinates() { Lat = package.Recipient.Lat, Lon = package.Recipient.Lon };
+                    var packageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     var vehicleRangeWithPackage = new List<double>();
                     vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.CourierCurrentLocation, packageSender));
@@ -256,14 +256,7 @@ namespace DeliveryCompany.BusinessLayer
         //    return todaysPackages;
         //}
 
-        private void UpdatePackages(List<Package> packages)
-        {
-            foreach (var package in packages)
-            {
-                package.State = StateOfPackage.Given;
-                _packageService.Update(package);
-            }
-        }
+
 
         private Dictionary<int, double> GetAllVehiclesRange()
         {

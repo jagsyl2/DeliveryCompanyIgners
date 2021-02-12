@@ -36,220 +36,222 @@ namespace DeliveryCompany.Tests
     //        //int nearestDistance = service.FindTheNearestCourier(distances);
 
     //        //nearestDistance.Should().Be(result);
-        }
+    //    }
 
-        //[Test]
-        //public void PreparingTodaysParcelsForShippin_3PackagesAndNoDrivers_ReturnNullListPackages()
-        //{
-        //    List<Package> packages = new List<Package>();
-        //    packages.Add(new Package(1, PackageSize.Average));
-        //    packages.Add(new Package(2, PackageSize.Large));
-        //    packages.Add(new Package(3, PackageSize.Small));
+    //    [Test]
+    //    public void PreparingTodaysParcelsForShippin_3PackagesAndNoDrivers_ReturnNullListPackages()
+    //    {
+    //        List<Package> packages = new List<Package>();
+    //        packages.Add(new Package(1, PackageSize.Average));
+    //        packages.Add(new Package(2, PackageSize.Large));
+    //        packages.Add(new Package(3, PackageSize.Small));
 
-        //    List<User> users = new List<User>();
+    //        List<User> users = new List<User>();
 
-        //    var packageServiceMock = new Mock<IPackageService>();
-        //    packageServiceMock
-        //        .Setup(x => x.CheckPackagesAwaitingPosting())
-        //        .Returns(packages);
+    //        var packageServiceMock = new Mock<IPackageService>();
+    //        packageServiceMock
+    //            .Setup(x => x.CheckPackagesAwaitingPosting())
+    //            .Returns(packages);
 
-        //    var userServiceMock = new Mock<IUserService>();
-        //    userServiceMock
-        //        .Setup(x => x.GetAllDrivers())
-        //        .Returns(users);
+    //        var userServiceMock = new Mock<IUserService>();
+    //        userServiceMock
+    //            .Setup(x => x.GetAllDrivers())
+    //            .Returns(users);
 
-        //    var locationServiceMock = new Mock<ILocationService>();
-        //    var vehicleServiceMock = new Mock<IVehicleService>();
-        //    var jsonSerializerMock = new Mock<IJsonSerializer>();
+    //        var locationServiceMock = new Mock<ILocationService>();
+    //        var vehicleServiceMock = new Mock<IVehicleService>();
+    //        var jsonSerializerMock = new Mock<IJsonSerializer>();
 
-        //    var service = new WaybillsService(
-        //        locationServiceMock.Object,
-        //        vehicleServiceMock.Object,
-        //        packageServiceMock.Object,
-        //        jsonSerializerMock.Object,
-        //        userServiceMock.Object);
+    //        var service = new WaybillsService(
+    //            locationServiceMock.Object,
+    //            vehicleServiceMock.Object,
+    //            packageServiceMock.Object,
+    //            jsonSerializerMock.Object,
+    //            userServiceMock.Object);
 
-            //List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
+    //        List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
 
-            //todaysPackage.Should().BeNull();
-        //}
+    //        todaysPackage.Should().BeNull();
+    //    }
 
-        //[Test]
-        //public void AssignPackagesToCouriers_GivePackageAndDriverWithoutVehile_ReturnEmptyList()
-        //{
-        //    List<Package> packages = new List<Package>();
-        //    packages.Add(new Package() { 
-        //        Id =3,
-        //        //RecipientStreet = "Wielkopolska",
-        //        //RecipientStreetNumber = "56",
-        //        //RecipientCity = "Gdynia",
-        //        Size = PackageSize.Average });
+    //    [Test]
+    //    public void AssignPackagesToCouriers_GivePackageAndDriverWithoutVehile_ReturnEmptyList()
+    //    {
+    //        List<Package> packages = new List<Package>();
+    //        packages.Add(new Package()
+    //        {
+    //            Id = 3,
+    //            //RecipientStreet = "Wielkopolska",
+    //            //RecipientStreetNumber = "56",
+    //            //RecipientCity = "Gdynia",
+    //            Size = PackageSize.Average
+    //        });
 
-        //    List<User> users = new List<User>();
-        //    users.Add(new User() { Id=5, Street="Œliska", StreetNumber="28C", City="Gdynia"});
+    //        List<User> users = new List<User>();
+    //        users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
 
-        //    Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
-        //    Dictionary<int, double> distance = new Dictionary<int, double>();
-        //    distance.Add(3, 20);
+    //        Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
+    //        Dictionary<int, double> distance = new Dictionary<int, double>();
+    //        distance.Add(3, 20);
 
-        //    var vehicleServiceMock = new Mock<IVehicleService>();
-        //    vehicleServiceMock
-        //        .Setup(x => x.GetVehicle(5))
-        //        .Returns(new Vehicle());
+    //        var vehicleServiceMock = new Mock<IVehicleService>();
+    //        vehicleServiceMock
+    //            .Setup(x => x.GetVehicle(5))
+    //            .Returns(new Vehicle());
 
-        //    var locationServiceMock = new Mock<ILocationService>();
-        //    locationServiceMock
-        //        .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
-        //        .Returns(distance);
+    //        var locationServiceMock = new Mock<ILocationService>();
+    //        locationServiceMock
+    //            .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+    //            .Returns(distance);
 
-        //    var packageServiceMock = new Mock<IPackageService>();
-        //    var jsonSerializerMock = new Mock<IJsonSerializer>();
-        //    var userServiceMock = new Mock<IUserService>();
+    //        var packageServiceMock = new Mock<IPackageService>();
+    //        var jsonSerializerMock = new Mock<IJsonSerializer>();
+    //        var userServiceMock = new Mock<IUserService>();
 
-        //    var service = new WaybillsService(
-        //        locationServiceMock.Object,
-        //        vehicleServiceMock.Object,
-        //        packageServiceMock.Object,
-        //        jsonSerializerMock.Object,
-        //        userServiceMock.Object);
+    //        var service = new WaybillsService(
+    //            locationServiceMock.Object,
+    //            vehicleServiceMock.Object,
+    //            packageServiceMock.Object,
+    //            jsonSerializerMock.Object,
+    //            userServiceMock.Object);
 
-            //List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
+    //        List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 
-            //todaysPackage.Should().BeEmpty();
-        //}
+    //        todaysPackage.Should().BeEmpty();
+    //    }
 
-//        [Test]
-//        public void AssignPackagesToCouriers_Give1Package_ReturnListWith1Position()
-//        {
-//            List<Package> packages = new List<Package>();
-//            packages.Add(new Package()
-//            {
-//                Id = 3,
-//                //RecipientStreet = "Wielkopolska",
-//                //RecipientStreetNumber = "56",
-//                //RecipientCity = "Gdynia",
-//                Size = PackageSize.Average
-//            });
+    //    [Test]
+    //    public void AssignPackagesToCouriers_Give1Package_ReturnListWith1Position()
+    //    {
+    //        List<Package> packages = new List<Package>();
+    //        packages.Add(new Package()
+    //        {
+    //            Id = 3,
+    //            //RecipientStreet = "Wielkopolska",
+    //            //RecipientStreetNumber = "56",
+    //            //RecipientCity = "Gdynia",
+    //            Size = PackageSize.Average
+    //        });
 
-//            List<User> users = new List<User>();
-//            users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
-//            users.Add(new User() { Id = 6, Street = "Niska", StreetNumber = "5", City = "Bydgoszcz" });
+    //        List<User> users = new List<User>();
+    //        users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
+    //        users.Add(new User() { Id = 6, Street = "Niska", StreetNumber = "5", City = "Bydgoszcz" });
 
-//            Dictionary<int, double> distance = new Dictionary<int, double>();
-//            distance.Add(5, 20);
-//            distance.Add(6, 150);
+    //        Dictionary<int, double> distance = new Dictionary<int, double>();
+    //        distance.Add(5, 20);
+    //        distance.Add(6, 150);
 
-//            Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
-//            vehiclesCapacity.Add(5, 200);
+    //        Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
+    //        vehiclesCapacity.Add(5, 200);
 
-//            var vehicleServiceMock = new Mock<IVehicleService>();
-//            vehicleServiceMock
-//                .Setup(x => x.GetVehicle(5))
-//                .Returns(new Vehicle() {Id=5 });
+    //        var vehicleServiceMock = new Mock<IVehicleService>();
+    //        vehicleServiceMock
+    //            .Setup(x => x.GetVehicle(5))
+    //            .Returns(new Vehicle() { Id = 5 });
 
-//            var locationServiceMock = new Mock<ILocationService>();
-//            locationServiceMock
-//                .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
-//                .Returns(distance);
+    //        var locationServiceMock = new Mock<ILocationService>();
+    //        locationServiceMock
+    //            .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+    //            .Returns(distance);
 
-//            var packageServiceMock = new Mock<IPackageService>();
-//            var jsonSerializerMock = new Mock<IJsonSerializer>();
-//            var userServiceMock = new Mock<IUserService>();
+    //        var packageServiceMock = new Mock<IPackageService>();
+    //        var jsonSerializerMock = new Mock<IJsonSerializer>();
+    //        var userServiceMock = new Mock<IUserService>();
 
-//            var service = new WaybillsService(
-//                locationServiceMock.Object,
-//                vehicleServiceMock.Object,
-//                packageServiceMock.Object,
-//                jsonSerializerMock.Object,
-//                userServiceMock.Object);
+    //        var service = new WaybillsService(
+    //            locationServiceMock.Object,
+    //            vehicleServiceMock.Object,
+    //            packageServiceMock.Object,
+    //            jsonSerializerMock.Object,
+    //            userServiceMock.Object);
 
-//            //List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
+    //        //List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 
-//            //todaysPackage.Should().HaveCount(1);
-//        }
+    //        //todaysPackage.Should().HaveCount(1);
+    //    }
 
-//        [Test]
-//        public void PreparingTodaysParcelsForShippin_NoPackages_ReturnNullListPackages()
-//        {
-//            List<Package> packages = new List<Package>();
+    //    [Test]
+    //    public void PreparingTodaysParcelsForShippin_NoPackages_ReturnNullListPackages()
+    //    {
+    //        List<Package> packages = new List<Package>();
 
-//            List<User> users = new List<User>();
-//            users.Add(new User() {Id=1, Type = TypeOfUser.Driver });
+    //        List<User> users = new List<User>();
+    //        users.Add(new User() { Id = 1, Type = TypeOfUser.Driver });
 
-//            var packageServiceMock = new Mock<IPackageService>();
-//            packageServiceMock
-//                .Setup(x => x.CheckPackagesAwaitingPosting())
-//                .Returns(packages);
+    //        var packageServiceMock = new Mock<IPackageService>();
+    //        packageServiceMock
+    //            .Setup(x => x.CheckPackagesAwaitingPosting())
+    //            .Returns(packages);
 
-//            var userServiceMock = new Mock<IUserService>();
-//            userServiceMock
-//                .Setup(x => x.GetAllDrivers())
-//                .Returns(users);
+    //        var userServiceMock = new Mock<IUserService>();
+    //        userServiceMock
+    //            .Setup(x => x.GetAllDrivers())
+    //            .Returns(users);
 
-//            var locationServiceMock = new Mock<ILocationService>();
-//            var vehicleServiceMock = new Mock<IVehicleService>();
-//            var jsonSerializerMock = new Mock<IJsonSerializer>();
+    //        var locationServiceMock = new Mock<ILocationService>();
+    //        var vehicleServiceMock = new Mock<IVehicleService>();
+    //        var jsonSerializerMock = new Mock<IJsonSerializer>();
 
-//            var service = new WaybillsService(
-//                locationServiceMock.Object,
-//                vehicleServiceMock.Object,
-//                packageServiceMock.Object,
-//                jsonSerializerMock.Object,
-//                userServiceMock.Object);
+    //        var service = new WaybillsService(
+    //            locationServiceMock.Object,
+    //            vehicleServiceMock.Object,
+    //            packageServiceMock.Object,
+    //            jsonSerializerMock.Object,
+    //            userServiceMock.Object);
 
-//            //List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
+    //        //List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
 
-//            //todaysPackage.Should().BeNull();
-//        }
+    //        //todaysPackage.Should().BeNull();
+    //    }
 
-//        [Test]
-//        public void AssignPackagesToCouriers_Give4Packages_ReturnListWith3Positions()
-//        {
-//            List<Package> packages = new List<Package>();
-//            packages.Add(new Package() { Id = 1, Size = PackageSize.Average });
-//            packages.Add(new Package() { Id = 2, Size = PackageSize.Large });
-//            packages.Add(new Package() { Id = 3, Size = PackageSize.Average });
-//            packages.Add(new Package() { Id = 4, Size = PackageSize.Small });
+    //    [Test]
+    //    public void AssignPackagesToCouriers_Give4Packages_ReturnListWith3Positions()
+    //    {
+    //        List<Package> packages = new List<Package>();
+    //        packages.Add(new Package() { Id = 1, Size = PackageSize.Average });
+    //        packages.Add(new Package() { Id = 2, Size = PackageSize.Large });
+    //        packages.Add(new Package() { Id = 3, Size = PackageSize.Average });
+    //        packages.Add(new Package() { Id = 4, Size = PackageSize.Small });
 
-//            List<User> users = new List<User>();
-//            users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
-//            users.Add(new User() { Id = 6, Street = "Niska", StreetNumber = "5", City = "Bydgoszcz" });
+    //        List<User> users = new List<User>();
+    //        users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
+    //        users.Add(new User() { Id = 6, Street = "Niska", StreetNumber = "5", City = "Bydgoszcz" });
 
-//            Dictionary<int, double> distance = new Dictionary<int, double>();
-//            distance.Add(5, 20);
-//            distance.Add(6, 150);
+    //        Dictionary<int, double> distance = new Dictionary<int, double>();
+    //        distance.Add(5, 20);
+    //        distance.Add(6, 150);
 
-//            Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
-//            vehiclesCapacity.Add(5, 220);
+    //        Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
+    //        vehiclesCapacity.Add(5, 220);
 
-//            var vehicleServiceMock = new Mock<IVehicleService>();
-//            vehicleServiceMock
-//                .Setup(x => x.GetVehicle(5))
-//                .Returns(new Vehicle() { Id = 5 });
+    //        var vehicleServiceMock = new Mock<IVehicleService>();
+    //        vehicleServiceMock
+    //            .Setup(x => x.GetVehicle(5))
+    //            .Returns(new Vehicle() { Id = 5 });
 
-//            var locationServiceMock = new Mock<ILocationService>();
-//            locationServiceMock
-//                .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
-//                .Returns(distance);
+    //        var locationServiceMock = new Mock<ILocationService>();
+    //        locationServiceMock
+    //            .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+    //            .Returns(distance);
 
-//            var packageServiceMock = new Mock<IPackageService>();
-//            var jsonSerializerMock = new Mock<IJsonSerializer>();
-//            var userServiceMock = new Mock<IUserService>();
+    //        var packageServiceMock = new Mock<IPackageService>();
+    //        var jsonSerializerMock = new Mock<IJsonSerializer>();
+    //        var userServiceMock = new Mock<IUserService>();
 
-//            var service = new WaybillsService(
-//                locationServiceMock.Object,
-//                vehicleServiceMock.Object,
-//                packageServiceMock.Object,
-//                jsonSerializerMock.Object,
-//                userServiceMock.Object);
+    //        var service = new WaybillsService(
+    //            locationServiceMock.Object,
+    //            vehicleServiceMock.Object,
+    //            packageServiceMock.Object,
+    //            jsonSerializerMock.Object,
+    //            userServiceMock.Object);
 
-//            //List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
+    //        //List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 
-//            //todaysPackage.Should().HaveCount(3);
-//            //Assert.IsTrue(todaysPackage.Contains(packages[0]));
-//            //Assert.IsTrue(todaysPackage.Contains(packages[1]));
-//            //Assert.IsFalse(todaysPackage.Contains(packages[2]));
-//            //Assert.IsTrue(todaysPackage.Contains(packages[3]));
-//        }
-//    }
-//}
+    //        //todaysPackage.Should().HaveCount(3);
+    //        //Assert.IsTrue(todaysPackage.Contains(packages[0]));
+    //        //Assert.IsTrue(todaysPackage.Contains(packages[1]));
+    //        //Assert.IsFalse(todaysPackage.Contains(packages[2]));
+    //        //Assert.IsTrue(todaysPackage.Contains(packages[3]));
+    //    }
+    //}
+}

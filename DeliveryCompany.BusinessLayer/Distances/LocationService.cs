@@ -9,7 +9,7 @@ namespace DeliveryCompany.BusinessLayer.Distances
     public interface ILocationService
     {
         public LocationCoordinates ChangeLocationToCoordinates(User user);
-        //public LocationCoordinates ChangeLocationToCoordinates(Recipient recipient);
+        public LocationCoordinates ChangeLocationToCoordinates(string city, string postCode, string street, string streetNumber);
         public Dictionary<int, double> CountDistancesFromPackageToCouriers(List<User> couriers, Package package);
         public string GetCoordinatesForAddress(string country, string city, string postcode, string street, string building);
         public double GetDistanceBetweenTwoPlaces(LocationCoordinates originLocation, LocationCoordinates destinationLocation);
@@ -22,7 +22,7 @@ namespace DeliveryCompany.BusinessLayer.Distances
         public LocationCoordinates ChangeLocationToCoordinates(User user)
         {
             var location = GetCoordinatesForAddress("Polska", user.City, user.PostCode, user.Street, user.StreetNumber);
-            var locationData = _jsonSerializer.Deserialize(location);
+            var locationData = _jsonSerializer.DeserializeLocation(location);
 
             var locationCoordinates = new LocationCoordinates()
             {
@@ -33,10 +33,10 @@ namespace DeliveryCompany.BusinessLayer.Distances
             return locationCoordinates;
         }
 
-        public LocationCoordinates ChangeLocationToCoordinates(Recipient recipient)
+        public LocationCoordinates ChangeLocationToCoordinates(string city, string postCode, string street, string streetNumber)
         {
-            var location = GetCoordinatesForAddress("Polska", recipient.City, recipient.PostCode, recipient.Street, recipient.StreetNumber);
-            var locationData = _jsonSerializer.Deserialize(location);
+            var location = GetCoordinatesForAddress("Polska", city, postCode, street, streetNumber);
+            var locationData = _jsonSerializer.DeserializeLocation(location);
 
             var locationCoordinates = new LocationCoordinates()
             {

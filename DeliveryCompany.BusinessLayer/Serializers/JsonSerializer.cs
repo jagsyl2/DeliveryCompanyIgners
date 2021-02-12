@@ -8,7 +8,7 @@ namespace DeliveryCompany.BusinessLayer.Serializers
     public interface IJsonSerializer
     {
         public void Serialize(string filePath, List<Package> dataSet);
-        public List<JsonLocationData> Deserialize(string locationData);
+        public List<JsonLocationData> DeserializeLocation(string locationData);
     }
 
     public class JsonSerializer : IJsonSerializer
@@ -19,11 +19,19 @@ namespace DeliveryCompany.BusinessLayer.Serializers
             File.WriteAllText(filePath, jsonData);
         }
         
-        public List<JsonLocationData> Deserialize(string locationData)
+        public List<JsonLocationData> DeserializeLocation(string locationData)
         {
             var data = JsonConvert.DeserializeObject<List<JsonLocationData>>(locationData);
 
             return data;
+        }
+
+        public List<Package> Deserialize(string filePath)
+        {
+            var jsonData = File.ReadAllText(filePath);
+            var packages = JsonConvert.DeserializeObject<List<Package>>(jsonData); 
+
+            return packages;
         }
     }
 }

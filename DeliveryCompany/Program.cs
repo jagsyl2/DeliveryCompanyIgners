@@ -1,4 +1,5 @@
 ﻿using DeliveryCompany.BusinessLayer;
+using DeliveryCompany.BusinessLayer.SpaceTime;
 using DeliveryCompany.BusinessLayer.ScheduledTask;
 using System;
 
@@ -15,6 +16,8 @@ namespace DeliveryCompany
         private UserService _userService = new UserService();
         private IoHelper _ioHelper = new IoHelper();
         private Menu _loginMenu = new Menu();
+        private SpaceTimeIncurvator _spaceTimeIncurvator = new SpaceTimeIncurvator();
+        
 
         private bool _exit;
 
@@ -26,7 +29,8 @@ namespace DeliveryCompany
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            
+            _spaceTimeIncurvator.SpaceTime();
+
             JobScheduler jobScheduler = new JobScheduler();
             jobScheduler.Start();
 

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.BusinessLay
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.DataLayer", "DeliveryCompany.DataLayer\DeliveryCompany.DataLayer.csproj", "{AA92F50A-C11C-4114-959C-FE206D7281DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryCompany.Tests", "DeliveryCompany.Tests\DeliveryCompany.Tests.csproj", "{048B3158-6352-4849-A6CC-868F97E9012B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.Tests", "DeliveryCompany.Tests\DeliveryCompany.Tests.csproj", "{048B3158-6352-4849-A6CC-868F97E9012B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

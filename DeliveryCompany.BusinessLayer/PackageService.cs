@@ -10,7 +10,8 @@ namespace DeliveryCompany.BusinessLayer
     {
         public void Add(Package package);
         public void Update(Package package);
-        public List<Package> CheckPackagesAwaitingPosting();
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
     }
 
     public class PackageService : IPackageService
@@ -33,14 +34,22 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public List<Package> CheckPackagesAwaitingPosting()
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage)
+        {
+            foreach (var package in packages)
+            {
+                package.State = stateOfPackage;
+                Update(package);
+            }
+        }
+
+        public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage)
         {
             using (var context = new DeliveryCompanyDbContext())
             {
                 return context.Packages
                     .Include(x => x.Sender)
-                    .Include(x => x.Recipient)
-                    .Where(x => x.State == StateOfPackage.AwaitingPosting)
+                    .Where(x => x.State == stateOfPackage)
                     .ToList();
             }
         }
