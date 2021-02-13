@@ -60,6 +60,8 @@ namespace DeliveryCompany
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingUsersInDatabase();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
 
             _timerService.Start();
             //_timerService.SetTimer();
