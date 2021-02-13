@@ -44,11 +44,19 @@ namespace DeliveryCompany.BusinessLayer
 
             foreach (var user in users)
             {
-                var userCoordinate = _locationService.ChangeLocationToCoordinates(user);
-                user.lat = userCoordinate.Lat;
-                user.lon = userCoordinate.Lon;
+                try
+                {
+                    var userCoordinate = _locationService.ChangeLocationToCoordinates(user);
+                    user.lat = userCoordinate.Lat;
+                    user.lon = userCoordinate.Lon;
 
-                _userService.Update(user);
+                    _userService.Update(user);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"User no {user.Id} addresses in the database does not exist! Check it!");
+                }
+
             }
         }
 
@@ -58,11 +66,18 @@ namespace DeliveryCompany.BusinessLayer
 
             foreach (var package in packages)
             {
-                var packageCoordinate = _locationService.ChangeLocationToCoordinates(package.RecipientCity, package.RecipientPostCode, package.RecipientStreet, package.RecipientStreetNumber);
-                package.RecipientLat = packageCoordinate.Lat;
-                package.RecipientLon = packageCoordinate.Lon;
+                try
+                {
+                    var packageCoordinate = _locationService.ChangeLocationToCoordinates(package.RecipientCity, package.RecipientPostCode, package.RecipientStreet, package.RecipientStreetNumber);
+                    package.RecipientLat = packageCoordinate.Lat;
+                    package.RecipientLon = packageCoordinate.Lon;
 
-                _packageService.Update(package);
+                    _packageService.Update(package);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Package recipient addresses no {package.Id} in the database does not exist! Check it!");
+                }
             }
         }
     }

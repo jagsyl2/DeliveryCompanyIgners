@@ -57,7 +57,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Packages
                     .Include(x => x.Sender)
-                    .Where(x => x.State == stateOfPackage)
+                    .Where(x => (x.State == stateOfPackage && (x.RecipientLat != 999 || x.RecipientLon != 999)))
                     .ToList();
             }
         }

@@ -45,7 +45,7 @@ namespace DeliveryCompany.BusinessLayer
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
-                    .Where(x => x.Type == TypeOfUser.Customer)
+                    .Where(x => x.Type == TypeOfUser.Customer && (x.lat != 999 || x.lon != 999))
                     .ToList();
             }
         }
@@ -55,7 +55,7 @@ namespace DeliveryCompany.BusinessLayer
             using(var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
-                    .Where(x => x.Type == TypeOfUser.Driver)
+                    .Where(x => x.Type == TypeOfUser.Driver && (x.lat != 999 || x.lon != 999))
                     .ToList();
             }
         }

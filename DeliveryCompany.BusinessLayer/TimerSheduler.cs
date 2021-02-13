@@ -60,17 +60,17 @@ namespace DeliveryCompany.BusinessLayer
         {
             var now = _fastForwardTimeProvider.Now;
 
-            if (now.TimeOfDay >= new TimeSpan(0, 0, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 0, 0, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 0, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 0, 7, 59, 999))
             {
                 _waybillsService.CreateWaybills();
             }
 
-            if (now.TimeOfDay >= new TimeSpan(0, 8, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 8, 0, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 8, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 8, 7, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheBeginningOfJourney();
             }
 
-            if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 0, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 7, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheEndOfJourney();
             }

@@ -2,8 +2,8 @@
 {
     public enum TypeOfUser
     {
-        Driver = 1,
-        Customer = 2
+        Driver = 0,
+        Customer = 1
     }
 
     public class User

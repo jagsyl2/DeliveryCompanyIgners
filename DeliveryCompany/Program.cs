@@ -142,6 +142,7 @@ namespace DeliveryCompany
             _userService.Add(user);
 
             Console.WriteLine($"A new {user.Type} has been added.");
+            Console.WriteLine();
         }
     }
 }

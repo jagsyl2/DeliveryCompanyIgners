@@ -24,33 +24,40 @@ namespace DeliveryCompany
 
         public User CreateNewUser()
         {
-            var newUser = new User()
+            bool adressExist = false;
+            do
             {
-                Name = _ioHelper.GetStringFromUser("What's your name?"),
-                Surname = _ioHelper.GetStringFromUser("What's your surname?"),
+                var newUser = new User()
+                {
+                    Name = _ioHelper.GetStringFromUser("What's your name?"),
+                    Surname = _ioHelper.GetStringFromUser("What's your surname?"),
 
-                Street = _ioHelper.GetStringFromUser("Enter the street address:"),
-                StreetNumber = _ioHelper.GetStringFromUser("Enter the street number:"),
-                PostCode = _ioHelper.GetStringFromUser("Enter the post code"),
-                City = _ioHelper.GetStringFromUser("Enter the city"),
+                    Street = _ioHelper.GetStringFromUser("Enter the street address:"),
+                    StreetNumber = _ioHelper.GetStringFromUser("Enter the street number:"),
+                    PostCode = _ioHelper.GetStringFromUser("Enter the post code"),
+                    City = _ioHelper.GetStringFromUser("Enter the city"),
 
-                Email = _ioHelper.GetEMailFromUser("What's your e-mail address?"),
-                Type = _ioHelper.GetTypeOfUserFromUser("Are you registering as a "),
-            };
+                    Email = _ioHelper.GetEMailFromUser("What's your e-mail address?"),
+                    Type = _ioHelper.GetTypeOfUserFromUser("Are you registering as a "),
+                };
 
-            try
-            {
-                var locationCoordinates = _locationService.ChangeLocationToCoordinates(newUser);
-                newUser.lat = locationCoordinates.Lat;
-                newUser.lon = locationCoordinates.Lon;
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("The given address does not exist. Try again...");
-                return null;
-            }
-
-            return newUser;
+                try
+                {
+                    var locationCoordinates = _locationService.ChangeLocationToCoordinates(newUser);
+                    newUser.lat = locationCoordinates.Lat;
+                    newUser.lon = locationCoordinates.Lon;
+                    
+                    return newUser;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("The given address does not exist. Try again...");
+                    adressExist = false;
+                }
+            } 
+            while (adressExist == false);
+            
+            return null;
         }
     }
 }
