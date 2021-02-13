@@ -147,7 +147,7 @@ namespace DeliveryCompany.BusinessLayer
 
                     if (distance > vehicleRange[vehicle.Id])
                     {
-                        break;
+                        continue;
                     }
                     vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
 

@@ -1,6 +1,10 @@
 ﻿using DeliveryCompany.BusinessLayer;
+using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Serializers;
+using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer;
 using System;
+
 using Unity;
 using Unity.Injection;
 
@@ -13,7 +17,7 @@ namespace DeliveryCompany
             var container = new UnityContainer();
 
             container.RegisterType<IDatabaseManagmentService, DatabaseManagmentService>();
-            container.RegisterType<IIoHelperRegisterUser, IIoHelperRegisterUser>();
+            container.RegisterType<IIoHelperRegisterUser, IoHelperRegisterUser>();
             container.RegisterType<IIoHelperAddVehicle, IoHelperAddVehicle>();
             container.RegisterType<IIoHelperAddPackage, IoHelperAddPackage>();
             container.RegisterType<IPackageService, PackageService>();
@@ -21,6 +25,16 @@ namespace DeliveryCompany
             container.RegisterType<IUserService, UserService>();
             container.RegisterType<IIoHelper, IoHelper>();
             container.RegisterType<IMenu, Menu>();
+
+            container.RegisterType<ILocationService, LocationService>();
+            container.RegisterType<IJsonSerializer, JsonSerializer>();
+            container.RegisterType<IPackageStatusOnTheGoService, PackageStatusOnTheGoService>();
+
+            container.RegisterSingleton<ITimeProvider, FastForwardTimeProvider>();
+            container.RegisterSingleton<ITimerSheduler, TimerSheduler>();
+            //container.RegisterSingleton<ITimeProvider, RealTimeProvider>();
+
+            container.RegisterSingleton<IWaybillsService, WaybillsService>();
 
             container.RegisterType<Func<IDeliveryCompanyDbContext>>(
                 new InjectionFactory(ctx => new Func<IDeliveryCompanyDbContext>(() => new DeliveryCompanyDbContext())));

@@ -16,10 +16,11 @@ namespace DeliveryCompany
         private readonly IUserService               _userService;
         private readonly IIoHelper                  _ioHelper;
         private readonly IMenu                      _loginMenu;
-        //private TimerSheduler _timerService;
+        //private readonly ITimeProvider              _fastForwardTimeProvider;
+        private readonly ITimerSheduler _timerService;
 
-        ITimeProvider systemTimeProvider = new FastForwardTimeProvider();
-        private TimerSheduler scheduler;
+        //private readonly ITimeProvider _fastForwardTimeProvider = new FastForwardTimeProvider();
+        //private TimerSheduler scheduler;
         private bool _exit;
         
         static void Main()
@@ -38,7 +39,10 @@ namespace DeliveryCompany
             IVehicleService             vehicleService,
             IUserService                userService,
             IIoHelper                   ioHelper,
-            IMenu                       loginMenu)
+            IMenu                       loginMenu,
+            //ITimeProvider               timeProvider,
+            ITimerSheduler timerSheduler
+            )
         {
             _databaseManagmentService = databaseManagmentService;
             _ioHelperRegisterUser = ioHelperRegisterUser;
@@ -49,14 +53,15 @@ namespace DeliveryCompany
             _userService = userService;
             _ioHelper = ioHelper;
             _loginMenu = loginMenu;
+            //_fastForwardTimeProvider = timeProvider;
+            _timerService = timerSheduler;
         }
 
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
 
-            scheduler = new TimerSheduler();
-            scheduler.Start();
+            _timerService.Start();
             //_timerService.SetTimer();
             //JobScheduler jobScheduler = new JobScheduler();
             //jobScheduler.Start();

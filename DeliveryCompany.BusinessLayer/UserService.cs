@@ -31,6 +31,15 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
+        public void Update(User user)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                context.Users.Update(user);
+                context.SaveChanges();
+            }
+        }
+
         public List<User> GetAllCustomers()
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
@@ -47,6 +56,16 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Users
                     .Where(x => x.Type == TypeOfUser.Driver)
+                    .ToList();
+            }
+        }
+
+        public List<User> GetAllUsersWithoutCoordinates()
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Users
+                    .Where(x => (x.lat == 999 || x.lon == 999))
                     .ToList();
             }
         }

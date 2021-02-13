@@ -61,5 +61,15 @@ namespace DeliveryCompany.BusinessLayer
                     .ToList();
             }
         }
+
+        public List<Package> GetAllPackagesWithoutCoordinates()
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Packages
+                    .Where(x => (x.RecipientLat == 999 || x.RecipientLon == 999))
+                    .ToList();
+            }
+        }
     }
 }

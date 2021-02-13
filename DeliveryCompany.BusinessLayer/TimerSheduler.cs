@@ -16,6 +16,7 @@ namespace DeliveryCompany.BusinessLayer
         private IPackageStatusOnTheGoService _packageStatus;
         private ITimeProvider _fastForwardTimeProvider;
         private IWaybillsService _waybillsService;
+        private readonly Timer _aTimer;
 
         public TimerSheduler(
             IPackageStatusOnTheGoService packageService,
@@ -25,26 +26,24 @@ namespace DeliveryCompany.BusinessLayer
             _packageStatus = packageService;
             _fastForwardTimeProvider = fastForwardTimeProvider;
             _waybillsService = waybillsService;
+            _aTimer = new Timer
+            {
+                Interval = 1000
+            };
         }
 
-        private readonly Timer aTimer;
-
-        public TimerSheduler()
-        {
-            aTimer = new Timer();
-            aTimer.Interval = 1000;
-        }
+        
 
         public void Start()
         {
-            aTimer.Elapsed += OnTimeEvent;
-            this.aTimer.Start();
+            _aTimer.Elapsed += OnTimeEvent;
+            this._aTimer.Start();
         }
 
         public void Stop()
         {
-            aTimer.Elapsed -= OnTimeEvent;
-            this.aTimer.Stop();
+            _aTimer.Elapsed -= OnTimeEvent;
+            this._aTimer.Stop();
         }
         //public void SetTimer()
         //{
@@ -79,9 +78,9 @@ namespace DeliveryCompany.BusinessLayer
 
         public void Dispose()
         {
-            if (this.aTimer != null)
+            if (this._aTimer != null)
             {
-                this.aTimer.Dispose();
+                this._aTimer.Dispose();
             }
         }
     }
