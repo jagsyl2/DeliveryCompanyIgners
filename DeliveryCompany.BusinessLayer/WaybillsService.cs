@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.BusinessLayer.Distances;
 using DeliveryCompany.BusinessLayer.Models;
 using DeliveryCompany.BusinessLayer.Serializers;
+using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -21,19 +22,22 @@ namespace DeliveryCompany.BusinessLayer
         private IPackageService _packageService;
         private IJsonSerializer _jsonSerializer;
         private IUserService _userService;
+        private ITimeProvider _fastForwardTimeProvider;
 
         public WaybillsService(
                 ILocationService locationService,
                 IVehicleService vehicleService,
                 IPackageService packageService,
                 IJsonSerializer jsonSerializer,
-                IUserService userService)
+                IUserService userService,
+                ITimeProvider fastForwardTimeProvider)
         {
             _locationService = locationService;
             _vehicleService = vehicleService;
             _packageService = packageService;
             _jsonSerializer = jsonSerializer;
             _userService = userService;
+            _fastForwardTimeProvider = fastForwardTimeProvider;
         }
 
         public void CreateWaybills()            //tworzenie listy przewozowej
@@ -294,7 +298,7 @@ namespace DeliveryCompany.BusinessLayer
             var vehicles = _vehicleService.GetAllVehicles();
             foreach (var vehicle in vehicles)
             {
-                var date = DateTime.Now.ToString("yyyy-MM-dd");
+                var date = _fastForwardTimeProvider.Now.ToString("yyyy-MM-dd");
                 var filePath = Path.Combine(path.FullName, $"{vehicle.DriverId}_{date}.json");
 
                 var waybill = packages

@@ -1,38 +1,65 @@
 ﻿using DeliveryCompany.BusinessLayer;
-using DeliveryCompany.BusinessLayer.SpaceTime;
-using DeliveryCompany.BusinessLayer.ScheduledTask;
+using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using System;
+using Unity;
 
 namespace DeliveryCompany
 {
     class Program
     {
-        private DatabaseManagmentService _databaseManagmentService = new DatabaseManagmentService();
-        private IoHelperRegisterUser _ioHelperRegisterUser = new IoHelperRegisterUser();
-        private IoHelperAddVehicle _ioHelperAddVehicle = new IoHelperAddVehicle();
-        private IoHelperAddPackage _ioHelperAddPackage = new IoHelperAddPackage();
-        private PackageService _packageService = new PackageService();
-        private VehicleService _vehicleService = new VehicleService();
-        private UserService _userService = new UserService();
-        private IoHelper _ioHelper = new IoHelper();
-        private Menu _loginMenu = new Menu();
-        private SpaceTimeIncurvator _spaceTimeIncurvator = new SpaceTimeIncurvator();
-        
+        private readonly IDatabaseManagmentService  _databaseManagmentService;
+        private readonly IIoHelperRegisterUser      _ioHelperRegisterUser;
+        private readonly IIoHelperAddVehicle        _ioHelperAddVehicle;
+        private readonly IIoHelperAddPackage        _ioHelperAddPackage;
+        private readonly IPackageService            _packageService;
+        private readonly IVehicleService            _vehicleService;
+        private readonly IUserService               _userService;
+        private readonly IIoHelper                  _ioHelper;
+        private readonly IMenu                      _loginMenu;
+        //private TimerSheduler _timerService;
 
+        ITimeProvider systemTimeProvider = new FastForwardTimeProvider();
+        private TimerSheduler scheduler;
         private bool _exit;
-
+        
         static void Main()
         {
-            new Program().Run();
+            var container = new UnityDiContainerProvider().GetContainer();
+
+            container.Resolve<Program>().Run();
+        }
+
+        public Program (
+            IDatabaseManagmentService   databaseManagmentService,
+            IIoHelperRegisterUser       ioHelperRegisterUser,
+            IIoHelperAddVehicle         ioHelperAddVehicle,
+            IIoHelperAddPackage         ioHelperAddPackage,
+            IPackageService             packageService,
+            IVehicleService             vehicleService,
+            IUserService                userService,
+            IIoHelper                   ioHelper,
+            IMenu                       loginMenu)
+        {
+            _databaseManagmentService = databaseManagmentService;
+            _ioHelperRegisterUser = ioHelperRegisterUser;
+            _ioHelperAddVehicle = ioHelperAddVehicle;
+            _ioHelperAddPackage = ioHelperAddPackage;
+            _packageService = packageService;
+            _vehicleService = vehicleService;
+            _userService = userService;
+            _ioHelper = ioHelper;
+            _loginMenu = loginMenu;
         }
 
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            _spaceTimeIncurvator.SpaceTime();
 
-            JobScheduler jobScheduler = new JobScheduler();
-            jobScheduler.Start();
+            scheduler = new TimerSheduler();
+            scheduler.Start();
+            //_timerService.SetTimer();
+            //JobScheduler jobScheduler = new JobScheduler();
+            //jobScheduler.Start();
 
             Console.WriteLine("Welcome to the application for administering the entire system of the Igners courier company!");
 
@@ -53,7 +80,17 @@ namespace DeliveryCompany
             _loginMenu.AddOption(new MenuItem { Key = 2, Action = AddPackage, Discription = "Adding a new package." });
             _loginMenu.AddOption(new MenuItem { Key = 3, Action = AddVehicle, Discription = "Adding a new vehicle." });
             _loginMenu.AddOption(new MenuItem { Key = 4, Action = () => { _exit = true; }, Discription = "Exit." });
+            
+            
+            //_loginMenu.AddOption(new MenuItem { Key = 5, Action = WhatTime, Discription = "What time is it?" });
         }
+
+        //private void WhatTime()
+        //{
+        //    //Console.WriteLine(realTimeProvider.Now);
+        //    Console.WriteLine(systemTimeProvider.Now);
+        //    Console.WriteLine(DateTime.Now);
+        //}
 
         private void AddVehicle()
         {

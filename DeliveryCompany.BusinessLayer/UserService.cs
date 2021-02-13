@@ -1,5 +1,6 @@
 ﻿using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,9 +15,16 @@ namespace DeliveryCompany.BusinessLayer
 
     public class UserService : IUserService
     {
+        private readonly Func<IDeliveryCompanyDbContext> _deliveryCompanyDbContextFactoryMethod;
+
+        public UserService(Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod)
+        {
+            _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
+        }
+
         public void Add(User user)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Users.Add(user);
                 context.SaveChanges();
@@ -25,7 +33,7 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<User> GetAllCustomers()
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
                     .Where(x => x.Type == TypeOfUser.Customer)
@@ -35,7 +43,7 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<User> GetAllDrivers()
         {
-            using(var context = new DeliveryCompanyDbContext())
+            using(var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
                     .Where(x => x.Type == TypeOfUser.Driver)

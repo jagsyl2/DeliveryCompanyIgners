@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,9 +17,16 @@ namespace DeliveryCompany.BusinessLayer
 
     public class PackageService : IPackageService
     {
+        private Func<IDeliveryCompanyDbContext> _deliveryCompanyDbContextFactoryMethod;
+
+        public PackageService(Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod)
+        {
+            _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
+        }
+
         public void Add(Package package)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Packages.Add(package);
                 context.SaveChanges();
@@ -27,9 +35,9 @@ namespace DeliveryCompany.BusinessLayer
 
         public void Update(Package package)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                context.Update(package);
+                context.Packages.Update(package);
                 context.SaveChanges();
             }
         }
@@ -45,7 +53,7 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Packages
                     .Include(x => x.Sender)

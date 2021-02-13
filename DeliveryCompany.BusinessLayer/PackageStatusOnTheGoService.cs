@@ -1,25 +1,34 @@
 ﻿using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.DataLayer.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace DeliveryCompany.BusinessLayer
 {
-    class PackageStatusOnTheGoService
+    public interface IPackageStatusOnTheGoService
     {
-        private JsonSerializer _jsonSerializer = new JsonSerializer();
-        private void ChangingPackageStatusAtTheBeginningOfJourney()
-        {
-            if (DateTime.Equals(, 8. 0. 0))
-            {
+        public void ChangingPackageStatusAtTheBeginningOfJourney();
+        public void ChangingPackageStatusAtTheEndOfJourney();
+    }
 
-            }
-            var packages = ;
+    public class PackageStatusOnTheGoService : IPackageStatusOnTheGoService
+    {
+        private IPackageService _packageService;
+
+        public PackageStatusOnTheGoService(IPackageService packageService)
+        {
+            _packageService = packageService;
         }
 
+        public void ChangingPackageStatusAtTheBeginningOfJourney()
+        {
+            var todaysPackages = _packageService.GetPackagesWithStatus(StateOfPackage.Given);
+            _packageService.UpdatePackages(todaysPackages, StateOfPackage.OnTheWay);
+        }
 
-
-        
+        public void ChangingPackageStatusAtTheEndOfJourney()
+        {
+            var todaysPackages = _packageService.GetPackagesWithStatus(StateOfPackage.OnTheWay);
+            _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received);
+        }
     }
 }

@@ -5,12 +5,26 @@ using System.Collections.Generic;
 
 namespace DeliveryCompany
 {
-    internal class IoHelperAddPackage
+    public interface IIoHelperAddPackage
     {
-        private IoHelper _ioHelper = new IoHelper();
-        private LocationService _locationService = new LocationService();
+        Package CreateNewPackage(int customerId);
+        int SelectCustomerId(List<User> customers);
+    }
 
-        internal int SelectCustomerId(List<User> customers)
+    public class IoHelperAddPackage : IIoHelperAddPackage
+    {
+        private readonly IIoHelper _ioHelper;
+        private readonly ILocationService _locationService;
+
+        public IoHelperAddPackage(
+            IIoHelper ioHelper,
+            ILocationService locationService)
+        {
+            _ioHelper = ioHelper;
+            _locationService = locationService;
+        }
+
+        public int SelectCustomerId(List<User> customers)
         {
             _ioHelper.PrintUsers(customers, "List of customers:");
 
@@ -19,7 +33,7 @@ namespace DeliveryCompany
             return customerId;
         }
 
-        internal Package CreateNewPackage(int customerId)
+        public Package CreateNewPackage(int customerId)
         {
             var newPackage = new Package
             {

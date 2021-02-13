@@ -4,15 +4,27 @@ using System.Collections.Generic;
 
 namespace DeliveryCompany
 {
-    internal class IoHelper
+    public interface IIoHelper
     {
-        internal string GetStringFromUser(string message)
+        string GetEMailFromUser(string message);
+        int GetIntFromUser(string message);
+        PackageSize GetSizeFromUser(string message);
+        string GetStringFromUser(string message);
+        TypeOfUser GetTypeOfUserFromUser(string massage);
+        void PrintUser(User user);
+        void PrintUsers(List<User> users, string message);
+        void WriteString(string message);
+    }
+
+    public class IoHelper : IIoHelper
+    {
+        public string GetStringFromUser(string message)
         {
             Console.WriteLine($"{message}");
             return Console.ReadLine();
         }
 
-        internal int GetIntFromUser(string message)
+        public int GetIntFromUser(string message)
         {
             int userChoice;
 
@@ -24,7 +36,7 @@ namespace DeliveryCompany
             return userChoice;
         }
 
-        internal string GetEMailFromUser(string message)
+        public string GetEMailFromUser(string message)
         {
             string eMail;
             bool validation;
@@ -47,13 +59,13 @@ namespace DeliveryCompany
             return eMail;
         }
 
-        internal void WriteString(string message)
+        public void WriteString(string message)
         {
             Console.WriteLine(message);
             Console.WriteLine();
         }
 
-        internal TypeOfUser GetTypeOfUserFromUser(string massage)
+        public TypeOfUser GetTypeOfUserFromUser(string massage)
         {
             var correctValues = "";
 
@@ -71,14 +83,14 @@ namespace DeliveryCompany
             return (TypeOfUser)result;
         }
 
-        internal PackageSize GetSizeFromUser(string message)
+        public PackageSize GetSizeFromUser(string message)
         {
             var correctValues = "";
 
             foreach (var item in (PackageSize[])Enum.GetValues(typeof(PackageSize)))
             {
                 correctValues += $"{item},";
-            } 
+            }
 
             object result;
 
@@ -90,7 +102,7 @@ namespace DeliveryCompany
             return (PackageSize)result;
         }
 
-        internal void PrintUsers(List<User> users, string message)
+        public void PrintUsers(List<User> users, string message)
         {
             Console.WriteLine(message);
             foreach (var user in users)
@@ -99,9 +111,11 @@ namespace DeliveryCompany
             }
         }
 
-        internal void PrintUser(User user)
+        public void PrintUser(User user)
         {
             Console.WriteLine($"{user.Id}.{user.Name} {user.Surname} - {user.Type}");
         }
     }
+
+
 }

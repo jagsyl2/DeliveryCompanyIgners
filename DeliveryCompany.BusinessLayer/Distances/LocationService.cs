@@ -17,7 +17,12 @@ namespace DeliveryCompany.BusinessLayer.Distances
 
     public class LocationService : ILocationService
     {
-        private JsonSerializer _jsonSerializer = new JsonSerializer();
+        private readonly IJsonSerializer _jsonSerializer;
+
+        public LocationService( IJsonSerializer jsonSerializer)
+        {
+            _jsonSerializer = jsonSerializer;
+        }
 
         public LocationCoordinates ChangeLocationToCoordinates(User user)
         {
@@ -46,10 +51,6 @@ namespace DeliveryCompany.BusinessLayer.Distances
 
             return locationCoordinates;
         }
-
-
-
-
 
         public Dictionary<int, double> CountDistancesFromPackageToCouriers(List<User> couriers, Package package)
         {

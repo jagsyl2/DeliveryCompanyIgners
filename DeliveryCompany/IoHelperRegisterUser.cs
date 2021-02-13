@@ -4,12 +4,25 @@ using System;
 
 namespace DeliveryCompany
 {
-    internal class IoHelperRegisterUser
+    public interface IIoHelperRegisterUser
     {
-        private IoHelper _ioHelper = new IoHelper();
-        private LocationService _locationService = new LocationService();
+        User CreateNewUser();
+    }
 
-        internal User CreateNewUser()
+    public class IoHelperRegisterUser : IIoHelperRegisterUser
+    {
+        private readonly IIoHelper _ioHelper;
+        private readonly ILocationService _locationService;
+
+        public IoHelperRegisterUser(
+            IIoHelper ioHelper,
+            ILocationService locationService)
+        {
+            _ioHelper = ioHelper;
+            _locationService = locationService;
+        }
+
+        public User CreateNewUser()
         {
             var newUser = new User()
             {

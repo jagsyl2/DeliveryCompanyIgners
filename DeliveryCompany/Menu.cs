@@ -3,11 +3,18 @@ using System.Collections.Generic;
 
 namespace DeliveryCompany
 {
-    internal class Menu
+    public interface IMenu
+    {
+        void AddOption(MenuItem item);
+        void GetMenuOption(int optionNumber);
+        void PrintMenuOptions();
+    }
+
+    public class Menu : IMenu
     {
         private Dictionary<int, MenuItem> _option = new Dictionary<int, MenuItem>();
 
-        internal void AddOption(MenuItem item)
+        public void AddOption(MenuItem item)
         {
             if (_option.ContainsKey(item.Key))
             {
@@ -18,7 +25,7 @@ namespace DeliveryCompany
             _option.Add(item.Key, item);
         }
 
-        internal void PrintMenuOptions()
+        public void PrintMenuOptions()
         {
             foreach (var item in _option)
             {
@@ -26,7 +33,7 @@ namespace DeliveryCompany
             }
         }
 
-        internal void GetMenuOption(int optionNumber)
+        public void GetMenuOption(int optionNumber)
         {
             if (!_option.ContainsKey(optionNumber))
             {

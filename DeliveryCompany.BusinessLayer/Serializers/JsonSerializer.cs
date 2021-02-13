@@ -25,13 +25,5 @@ namespace DeliveryCompany.BusinessLayer.Serializers
 
             return data;
         }
-
-        public List<Package> Deserialize(string filePath)
-        {
-            var jsonData = File.ReadAllText(filePath);
-            var packages = JsonConvert.DeserializeObject<List<Package>>(jsonData); 
-
-            return packages;
-        }
     }
 }
