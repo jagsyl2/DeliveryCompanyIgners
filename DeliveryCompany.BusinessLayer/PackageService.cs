@@ -67,6 +67,7 @@ namespace DeliveryCompany.BusinessLayer
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Packages
+                    .AsQueryable()
                     .Where(x => (x.RecipientLat == 999 || x.RecipientLon == 999))
                     .ToList();
             }

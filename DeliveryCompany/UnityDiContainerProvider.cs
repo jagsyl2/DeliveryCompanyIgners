@@ -1,5 +1,6 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Notifications;
 using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer;
@@ -35,6 +36,7 @@ namespace DeliveryCompany
             //container.RegisterSingleton<ITimeProvider, RealTimeProvider>();
 
             container.RegisterSingleton<IWaybillsService, WaybillsService>();
+            container.RegisterSingleton<INotificationService, NotificationService>();
 
             container.RegisterType<Func<IDeliveryCompanyDbContext>>(
                 new InjectionFactory(ctx => new Func<IDeliveryCompanyDbContext>(() => new DeliveryCompanyDbContext())));

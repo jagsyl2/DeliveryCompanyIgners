@@ -1,4 +1,5 @@
-﻿using DeliveryCompany.BusinessLayer.Serializers;
+﻿using DeliveryCompany.BusinessLayer.Notifications;
+using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.DataLayer.Models;
 using System;
 
@@ -13,10 +14,14 @@ namespace DeliveryCompany.BusinessLayer
     public class PackageStatusOnTheGoService : IPackageStatusOnTheGoService
     {
         private IPackageService _packageService;
+        private INotificationService _notificationService;
 
-        public PackageStatusOnTheGoService(IPackageService packageService)
+        public PackageStatusOnTheGoService(
+            IPackageService packageService,
+            INotificationService notificationService)
         {
             _packageService = packageService;
+            _notificationService = notificationService;
         }
 
         public void ChangingPackageStatusAtTheBeginningOfJourney()
@@ -29,6 +34,11 @@ namespace DeliveryCompany.BusinessLayer
         {
             var todaysPackages = _packageService.GetPackagesWithStatus(StateOfPackage.OnTheWay);
             _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received);
+
+            foreach (var package in todaysPackages)
+            {
+                _notificationService.NotifyOfPackageDelivery(package);
+            }
         }
     }
 }

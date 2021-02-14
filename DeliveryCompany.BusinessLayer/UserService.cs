@@ -45,6 +45,7 @@ namespace DeliveryCompany.BusinessLayer
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
+                    .AsQueryable()
                     .Where(x => x.Type == TypeOfUser.Customer && (x.lat != 999 || x.lon != 999))
                     .ToList();
             }
@@ -55,6 +56,7 @@ namespace DeliveryCompany.BusinessLayer
             using(var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
+                    .AsQueryable()
                     .Where(x => x.Type == TypeOfUser.Driver && (x.lat != 999 || x.lon != 999))
                     .ToList();
             }
@@ -65,6 +67,7 @@ namespace DeliveryCompany.BusinessLayer
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
+                    .AsQueryable()
                     .Where(x => (x.lat == 999 || x.lon == 999))
                     .ToList();
             }
