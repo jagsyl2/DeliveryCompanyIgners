@@ -26,13 +26,12 @@ namespace DeliveryCompany.BusinessLayer
             _packageStatus = packageService;
             _fastForwardTimeProvider = fastForwardTimeProvider;
             _waybillsService = waybillsService;
+
             _aTimer = new Timer
             {
                 Interval = 1000
             };
         }
-
-        
 
         public void Start()
         {
@@ -45,32 +44,22 @@ namespace DeliveryCompany.BusinessLayer
             _aTimer.Elapsed -= OnTimeEvent;
             this._aTimer.Stop();
         }
-        //public void SetTimer()
-        //{
-
-        //    aTimer = new Timer(1000);
-        //    aTimer.Start();
-
-        //    aTimer.Elapsed += OnTimeEvent;
-        //    aTimer.AutoReset = true;
-        //    aTimer.Enabled = true;
-        //}
 
         private void OnTimeEvent(object sender, ElapsedEventArgs e)
         {
             var now = _fastForwardTimeProvider.Now;
 
-            if (now.TimeOfDay >= new TimeSpan(0, 0, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 0, 7, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 0, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 0, 0, 59, 999))
             {
                 _waybillsService.CreateWaybills();
             }
 
-            if (now.TimeOfDay >= new TimeSpan(0, 8, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 8, 7, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 8, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 8, 0, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheBeginningOfJourney();
             }
 
-            if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 7, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 0, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheEndOfJourney();
             }

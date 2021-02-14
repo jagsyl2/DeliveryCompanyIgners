@@ -5,7 +5,6 @@ using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer;
 using System;
-
 using Unity;
 using Unity.Injection;
 
@@ -33,7 +32,6 @@ namespace DeliveryCompany
 
             container.RegisterSingleton<ITimeProvider, FastForwardTimeProvider>();
             container.RegisterSingleton<ITimerSheduler, TimerSheduler>();
-            //container.RegisterSingleton<ITimeProvider, RealTimeProvider>();
 
             container.RegisterSingleton<IWaybillsService, WaybillsService>();
             container.RegisterSingleton<INotificationService, NotificationService>();
@@ -41,7 +39,6 @@ namespace DeliveryCompany
             container.RegisterType<Func<IDeliveryCompanyDbContext>>(
                 new InjectionFactory(ctx => new Func<IDeliveryCompanyDbContext>(() => new DeliveryCompanyDbContext())));
 
-            //container.RegisterFactory<Func<IDeliveryCompanyDbContext>>(ctx => new Func<IDeliveryCompanyDbContext>(() => new DeliveryCompanyDbContext()));
             return container;
         }
     }

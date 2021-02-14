@@ -1,5 +1,4 @@
 ﻿using DeliveryCompany.BusinessLayer;
-using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using System;
 using Unity;
 
@@ -16,11 +15,8 @@ namespace DeliveryCompany
         private readonly IUserService               _userService;
         private readonly IIoHelper                  _ioHelper;
         private readonly IMenu                      _loginMenu;
-        //private readonly ITimeProvider              _fastForwardTimeProvider;
-        private readonly ITimerSheduler _timerService;
+        private readonly ITimerSheduler             _timerService;
 
-        //private readonly ITimeProvider _fastForwardTimeProvider = new FastForwardTimeProvider();
-        //private TimerSheduler scheduler;
         private bool _exit;
         
         static void Main()
@@ -40,8 +36,7 @@ namespace DeliveryCompany
             IUserService                userService,
             IIoHelper                   ioHelper,
             IMenu                       loginMenu,
-            //ITimeProvider               timeProvider,
-            ITimerSheduler timerSheduler
+            ITimerSheduler              timerSheduler
             )
         {
             _databaseManagmentService = databaseManagmentService;
@@ -53,7 +48,6 @@ namespace DeliveryCompany
             _userService = userService;
             _ioHelper = ioHelper;
             _loginMenu = loginMenu;
-            //_fastForwardTimeProvider = timeProvider;
             _timerService = timerSheduler;
         }
 
@@ -64,9 +58,6 @@ namespace DeliveryCompany
             _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
 
             _timerService.Start();
-            //_timerService.SetTimer();
-            //JobScheduler jobScheduler = new JobScheduler();
-            //jobScheduler.Start();
 
             Console.WriteLine("Welcome to the application for administering the entire system of the Igners courier company!");
 
@@ -87,17 +78,7 @@ namespace DeliveryCompany
             _loginMenu.AddOption(new MenuItem { Key = 2, Action = AddPackage, Discription = "Adding a new package." });
             _loginMenu.AddOption(new MenuItem { Key = 3, Action = AddVehicle, Discription = "Adding a new vehicle." });
             _loginMenu.AddOption(new MenuItem { Key = 4, Action = () => { _exit = true; }, Discription = "Exit." });
-            
-            
-            //_loginMenu.AddOption(new MenuItem { Key = 5, Action = WhatTime, Discription = "What time is it?" });
         }
-
-        //private void WhatTime()
-        //{
-        //    //Console.WriteLine(realTimeProvider.Now);
-        //    Console.WriteLine(systemTimeProvider.Now);
-        //    Console.WriteLine(DateTime.Now);
-        //}
 
         private void AddVehicle()
         {

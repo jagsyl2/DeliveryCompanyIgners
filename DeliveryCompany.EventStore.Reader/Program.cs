@@ -1,4 +1,6 @@
-﻿using EventStore.Client;
+﻿using DeliveryCompany.DataLayer.Models;
+using EventStore.Client;
+using Newtonsoft.Json;
 using System;
 using System.Text;
 using System.Threading;
@@ -33,8 +35,9 @@ namespace DeliveryCompany.EventStore.Reader
             CancellationToken cancellationToken)
         {
             var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data.ToArray());
-            Console.WriteLine(jsonData);
 
+            var package = JsonConvert.DeserializeObject<Package>(jsonData);
+            Console.WriteLine(jsonData);
         }
     }
 }

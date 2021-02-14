@@ -116,6 +116,4 @@ namespace DeliveryCompany
             Console.WriteLine($"{user.Id}.{user.Name} {user.Surname} - {user.Type}");
         }
     }
-
-
 }

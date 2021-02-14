@@ -9,10 +9,5 @@ namespace DeliveryCompany.BusinessLayer.Models
         internal bool FirstPackageForCourier = true;
         internal LocationCoordinates RecipientFirstPackage;
         internal LocationCoordinates RecipientCurrentPackage;
-
-        //internal LocationCoordinates StartingPlaceLon;
-        //internal LocationCoordinates CourierCurrentLocationLon;
-        //internal LocationCoordinates RecipientFirstPackageLon;
-        //internal LocationCoordinates RecipientCurrentPackageLon;
     }
 }

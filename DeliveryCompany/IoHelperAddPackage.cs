@@ -59,7 +59,12 @@ namespace DeliveryCompany
 
                 try
                 {
-                    var locationCoordinates = _locationService.ChangeLocationToCoordinates(newPackage.RecipientCity, newPackage.RecipientPostCode, newPackage.RecipientStreet, newPackage.RecipientStreetNumber);
+                    var locationCoordinates = _locationService.ChangeLocationToCoordinates(
+                                                    newPackage.RecipientCity, 
+                                                    newPackage.RecipientPostCode, 
+                                                    newPackage.RecipientStreet, 
+                                                    newPackage.RecipientStreetNumber);
+
                     newPackage.RecipientLat = locationCoordinates.Lat;
                     newPackage.RecipientLon = locationCoordinates.Lon;
 

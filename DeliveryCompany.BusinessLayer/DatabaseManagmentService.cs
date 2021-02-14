@@ -68,7 +68,12 @@ namespace DeliveryCompany.BusinessLayer
             {
                 try
                 {
-                    var packageCoordinate = _locationService.ChangeLocationToCoordinates(package.RecipientCity, package.RecipientPostCode, package.RecipientStreet, package.RecipientStreetNumber);
+                    var packageCoordinate = _locationService.ChangeLocationToCoordinates(
+                                                package.RecipientCity, 
+                                                package.RecipientPostCode, 
+                                                package.RecipientStreet, 
+                                                package.RecipientStreetNumber);
+
                     package.RecipientLat = packageCoordinate.Lat;
                     package.RecipientLon = packageCoordinate.Lon;
 

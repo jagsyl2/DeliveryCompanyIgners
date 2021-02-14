@@ -1,7 +1,5 @@
 ﻿using DeliveryCompany.BusinessLayer.Notifications;
-using DeliveryCompany.BusinessLayer.Serializers;
 using DeliveryCompany.DataLayer.Models;
-using System;
 
 namespace DeliveryCompany.BusinessLayer
 {
