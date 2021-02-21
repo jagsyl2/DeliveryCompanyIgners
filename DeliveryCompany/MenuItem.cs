@@ -2,7 +2,7 @@
 
 namespace DeliveryCompany
 {
-    internal class MenuItem
+    public class MenuItem
     {
         internal int Key;
         internal Action Action;

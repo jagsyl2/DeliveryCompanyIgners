@@ -3,11 +3,22 @@ using System.Collections.Generic;
 
 namespace DeliveryCompany
 {
-    internal class IoHelperAddVehicle
+    public interface IIoHelperAddVehicle
     {
-        private IoHelper _ioHelper = new IoHelper();
+        Vehicle CreateNewVehicle(int driverId);
+        int SelectDriverId(List<User> drivers);
+    }
 
-        internal int SelectDriverId(List<User> drivers)
+    public class IoHelperAddVehicle : IIoHelperAddVehicle
+    {
+        private readonly IIoHelper _ioHelper;
+
+        public IoHelperAddVehicle(IIoHelper ioHelper)
+        {
+            _ioHelper = ioHelper;
+        }
+
+        public int SelectDriverId(List<User> drivers)
         {
             _ioHelper.PrintUsers(drivers, "List of drivers:");
 
@@ -16,7 +27,7 @@ namespace DeliveryCompany
             return driverId;
         }
 
-        internal Vehicle CreateNewVehicle(int driverId)
+        public Vehicle CreateNewVehicle(int driverId)
         {
             var newVehicle = new Vehicle
             {
@@ -24,6 +35,7 @@ namespace DeliveryCompany
                 Model = _ioHelper.GetStringFromUser("Enter the car model:"),
                 RegistrationNumber = _ioHelper.GetStringFromUser("Enter the registration number:"),
                 LoadCapacity = _ioHelper.GetIntFromUser("Enter the load capacity of the car [kg]:"),
+                AverageSpeed = _ioHelper.GetIntFromUser("Enter average speed of the car [km/h]:"),
                 DriverId = driverId,
             };
 

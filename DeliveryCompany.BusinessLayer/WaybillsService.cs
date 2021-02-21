@@ -1,4 +1,7 @@
-﻿using DeliveryCompany.BusinessLayer.Serializers;
+﻿using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Models;
+using DeliveryCompany.BusinessLayer.Serializers;
+using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -10,12 +13,6 @@ namespace DeliveryCompany.BusinessLayer
     public interface IWaybillsService
     {
         public void CreateWaybills();
-        public List<Package> PreparingTodaysParcelsForShippin();
-        public List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity);
-        public void UpdatePackages(List<Package> packages);
-        public Dictionary<int, int> GetAllVehiclesLoadCapacity();
-        public void SerializeWaybills(List<Package> packages);
-        public int FindTheNearestCourier(Dictionary<int, double> distances);
     }
 
     public class WaybillsService : IWaybillsService
@@ -25,19 +22,22 @@ namespace DeliveryCompany.BusinessLayer
         private IPackageService _packageService;
         private IJsonSerializer _jsonSerializer;
         private IUserService _userService;
+        private ITimeProvider _fastForwardTimeProvider;
 
         public WaybillsService(
                 ILocationService locationService,
                 IVehicleService vehicleService,
                 IPackageService packageService,
                 IJsonSerializer jsonSerializer,
-                IUserService userService)
+                IUserService userService,
+                ITimeProvider fastForwardTimeProvider)
         {
             _locationService = locationService;
             _vehicleService = vehicleService;
             _packageService = packageService;
             _jsonSerializer = jsonSerializer;
             _userService = userService;
+            _fastForwardTimeProvider = fastForwardTimeProvider;
         }
 
         public void CreateWaybills()            //tworzenie listy przewozowej
@@ -52,7 +52,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 SerializeWaybills(todaysPackages);                          //serializację wykonuje dla każdego samochoddu po kolei, wyszukując na liście paczek z danego dnia czy jakaś została przypisana do samochodu
 
-                UpdatePackages(todaysPackages);                             //po stworzeniu list przewozowych aktualizuję w bazie danych status na "nadana" oraz dopisuje nr samochodu, którym podrużują
+                _packageService.UpdatePackages(todaysPackages, StateOfPackage.Given);   //po stworzeniu list przewozowych aktualizuję w bazie danych status na "nadana" oraz dopisuje nr samochodu, którym podrużują
             }
             catch (Exception)
             {                                                               //w przypadku problemów dostaje informację, że nie wygenerował listu przewozowego
@@ -63,7 +63,7 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<Package> PreparingTodaysParcelsForShippin()
         {
-            var packages = _packageService.CheckPackagesAwaitingPosting();      //pobieram paczki, których status jest "oczek. na nadanie". w przypadku braku paczek, nie tworzymy listy.
+            var packages = _packageService.GetPackagesWithStatus(StateOfPackage.AwaitingPosting);      //pobieram paczki, których status jest "oczek. na nadanie". w przypadku braku paczek, nie tworzymy listy.
             if (packages.Count < 1)
             {
                 return null;
@@ -91,19 +91,22 @@ namespace DeliveryCompany.BusinessLayer
         public List<Package> AssignPackagesToCouriers(List<Package> packages, List<User> couriers, Dictionary<int, int> vehiclesLoadCapacity)
         {
             var todaysPackages = new List<Package>();
+            var vehicleRange = GetAllVehiclesRange();
+            var courierLocationAlongTheWay = GetAllCouriersLocationCoordinates();
 
             foreach (var package in packages)
             {
-                var distances = _locationService.CountDistancesFromPackageToCourier(couriers, package);         //każdej paczce, która oczekuje na nadanie obliczam odległości od wszystkich kurierów 
+                var distances = _locationService.CountDistancesFromPackageToCouriers(couriers, package);         //każdej paczce, która oczekuje na nadanie obliczam odległości od wszystkich kurierów 
                 if (distances.Count == 0)
                 {
                     continue;
                 }
 
                 Vehicle vehicle;
+                int courierId;
                 do
                 {
-                    var courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
+                    courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
 
                     vehicle = _vehicleService.GetVehicle(courierId);                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
                     if (vehicle == null)                                                                        //zabezpieczam się też na wypadek gdyby kurier był na tyle nowy, że jeszcze nie dano mu samochodu
@@ -129,6 +132,41 @@ namespace DeliveryCompany.BusinessLayer
                     continue;
                 }
 
+                var currentCuriersLocation = courierLocationAlongTheWay[courierId];
+                if (currentCuriersLocation.FirstPackageForCourier == true)
+                {
+                    var firstPackageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var firstPackageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
+
+                    var vehicleRangeWithPackage = AddedDistancesBetweenTwoPlacesForFirstPackage(currentCuriersLocation, firstPackageSender, firstPackageRecipient);
+
+                    var distance = vehicleRangeWithPackage.Sum();
+                    if (distance > vehicleRange[vehicle.Id])
+                    {
+                        continue;
+                    }
+
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
+
+                    UpdateCourierLocationsAlongTheWayForFirstPackage(courierLocationAlongTheWay, courierId, firstPackageSender, firstPackageRecipient);
+                }
+                else
+                {
+                    var packageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var packageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
+
+                    List<double> vehicleRangeWithPackage = AddedDistancesBetweenTwoPlaces(currentCuriersLocation, packageSender, packageRecipient);
+
+                    var distance = vehicleRangeWithPackage.Sum();
+                    if (distance > vehicleRange[vehicle.Id])
+                    {
+                        continue;
+                    }
+
+                    ReductionVehicleRange(vehicleRange, vehicle, vehicleRangeWithPackage);
+                    UpdateCourierLocationsAlongTheWay(courierLocationAlongTheWay, courierId, packageSender, packageRecipient);
+                }
+
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
                 package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
@@ -139,16 +177,80 @@ namespace DeliveryCompany.BusinessLayer
             return todaysPackages;
         }
 
-        public void UpdatePackages(List<Package> packages)
+        private static void ReductionVehicleRange(Dictionary<int, double> vehicleRange, Vehicle vehicle, List<double> vehicleRangeWithPackage)
         {
-            foreach (var package in packages)
-            {
-                package.State = StateOfPackage.Given;
-                _packageService.Update(package);
-            }
+            vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
+            vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[2];
         }
 
-        public Dictionary<int, int> GetAllVehiclesLoadCapacity()
+        private static void UpdateCourierLocationsAlongTheWay(Dictionary<int, CourierLocationsAlongTheWay> courierLocationAlongTheWay, int courierId, LocationCoordinates packageSender, LocationCoordinates packageRecipient)
+        {
+            courierLocationAlongTheWay[courierId].CourierCurrentLocation = packageSender;
+            courierLocationAlongTheWay[courierId].RecipientCurrentPackage = packageRecipient;
+        }
+
+        private List<double> AddedDistancesBetweenTwoPlaces(CourierLocationsAlongTheWay currentCuriersLocation, LocationCoordinates packageSender, LocationCoordinates packageRecipient)
+        {
+            var vehicleRangeWithPackage = new List<double>();
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.CourierCurrentLocation, packageSender));
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(packageSender, currentCuriersLocation.RecipientFirstPackage));
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.RecipientFirstPackage, packageRecipient));
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(packageRecipient, currentCuriersLocation.StartingPlace));
+            return vehicleRangeWithPackage;
+        }
+
+        private static void UpdateCourierLocationsAlongTheWayForFirstPackage(Dictionary<int, CourierLocationsAlongTheWay> courierLocationAlongTheWay, int courierId, LocationCoordinates firstPackageSender, LocationCoordinates firstPackageRecipient)
+        {
+            courierLocationAlongTheWay[courierId].CourierCurrentLocation = firstPackageSender;
+            courierLocationAlongTheWay[courierId].RecipientFirstPackage = firstPackageRecipient;
+            courierLocationAlongTheWay[courierId].RecipientCurrentPackage = firstPackageRecipient;
+            courierLocationAlongTheWay[courierId].FirstPackageForCourier = false;
+        }
+
+        private List<double> AddedDistancesBetweenTwoPlacesForFirstPackage(CourierLocationsAlongTheWay currentCuriersLocation, LocationCoordinates firstPackageSender, LocationCoordinates firstPackageRecipient)
+        {
+            var vehicleRangeWithPackage = new List<double>();
+
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(currentCuriersLocation.StartingPlace, firstPackageSender));
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageSender, firstPackageRecipient));
+            vehicleRangeWithPackage.Add(_locationService.GetDistanceBetweenTwoPlaces(firstPackageRecipient, currentCuriersLocation.StartingPlace));
+            
+            return vehicleRangeWithPackage;
+        }
+
+        private Dictionary<int, CourierLocationsAlongTheWay> GetAllCouriersLocationCoordinates()
+        {
+            var courierLocationAlongTheWay = new Dictionary<int, CourierLocationsAlongTheWay>();
+            var couriers = _userService.GetAllDrivers();
+
+            foreach (var courier in couriers)
+            {
+                var courierLocations = new CourierLocationsAlongTheWay()
+                {
+                    StartingPlace = new LocationCoordinates { Lat = courier.lat, Lon = courier.lon },
+                };
+                courierLocationAlongTheWay.Add(courier.Id, courierLocations);
+            }
+
+            return courierLocationAlongTheWay;
+        }
+
+        private Dictionary<int, double> GetAllVehiclesRange()
+        {
+            var vehiclesRange = new Dictionary<int, double>();
+            var vehicles = _vehicleService.GetAllVehicles();
+            const int courierWorkingTime = 10;
+
+            foreach (var vehicle in vehicles)
+            {
+                var range = vehicle.AverageSpeed*courierWorkingTime;
+                vehiclesRange.Add(vehicle.Id, range);
+            }
+
+            return vehiclesRange;
+        }
+
+        private Dictionary<int, int> GetAllVehiclesLoadCapacity()
         {
             var vehiclesLoadCapacity = new Dictionary<int, int>();
             var vehicles = _vehicleService.GetAllVehicles();
@@ -161,7 +263,7 @@ namespace DeliveryCompany.BusinessLayer
             return vehiclesLoadCapacity;
         }
 
-        public void SerializeWaybills(List<Package> packages)
+        private void SerializeWaybills(List<Package> packages)
         {
             var slnPath = AppDomain.CurrentDomain.BaseDirectory;
             var path = Directory.CreateDirectory(slnPath + "shipping_lists");
@@ -169,7 +271,7 @@ namespace DeliveryCompany.BusinessLayer
             var vehicles = _vehicleService.GetAllVehicles();
             foreach (var vehicle in vehicles)
             {
-                var date = DateTime.Now.ToString("yyyy-MM-dd");
+                var date = _fastForwardTimeProvider.Now.ToString("yyyy-MM-dd");
                 var filePath = Path.Combine(path.FullName, $"{vehicle.DriverId}_{date}.json");
 
                 var waybill = packages

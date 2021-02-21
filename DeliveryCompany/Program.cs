@@ -1,34 +1,63 @@
 ﻿using DeliveryCompany.BusinessLayer;
-using DeliveryCompany.BusinessLayer.ScheduledTask;
 using System;
+using Unity;
 
 namespace DeliveryCompany
 {
     class Program
     {
-        private DatabaseManagmentService _databaseManagmentService = new DatabaseManagmentService();
-        private IoHelperRegisterUser _ioHelperRegisterUser = new IoHelperRegisterUser();
-        private IoHelperAddVehicle _ioHelperAddVehicle = new IoHelperAddVehicle();
-        private IoHelperAddPackage _ioHelperAddPackage = new IoHelperAddPackage();
-        private PackageService _packageService = new PackageService();
-        private VehicleService _vehicleService = new VehicleService();
-        private UserService _userService = new UserService();
-        private IoHelper _ioHelper = new IoHelper();
-        private Menu _loginMenu = new Menu();
+        private readonly IDatabaseManagmentService  _databaseManagmentService;
+        private readonly IIoHelperRegisterUser      _ioHelperRegisterUser;
+        private readonly IIoHelperAddVehicle        _ioHelperAddVehicle;
+        private readonly IIoHelperAddPackage        _ioHelperAddPackage;
+        private readonly IPackageService            _packageService;
+        private readonly IVehicleService            _vehicleService;
+        private readonly IUserService               _userService;
+        private readonly IIoHelper                  _ioHelper;
+        private readonly IMenu                      _loginMenu;
+        private readonly ITimerSheduler             _timerService;
 
         private bool _exit;
-
+        
         static void Main()
         {
-            new Program().Run();
+            var container = new UnityDiContainerProvider().GetContainer();
+
+            container.Resolve<Program>().Run();
+        }
+
+        public Program (
+            IDatabaseManagmentService   databaseManagmentService,
+            IIoHelperRegisterUser       ioHelperRegisterUser,
+            IIoHelperAddVehicle         ioHelperAddVehicle,
+            IIoHelperAddPackage         ioHelperAddPackage,
+            IPackageService             packageService,
+            IVehicleService             vehicleService,
+            IUserService                userService,
+            IIoHelper                   ioHelper,
+            IMenu                       loginMenu,
+            ITimerSheduler              timerSheduler
+            )
+        {
+            _databaseManagmentService = databaseManagmentService;
+            _ioHelperRegisterUser = ioHelperRegisterUser;
+            _ioHelperAddVehicle = ioHelperAddVehicle;
+            _ioHelperAddPackage = ioHelperAddPackage;
+            _packageService = packageService;
+            _vehicleService = vehicleService;
+            _userService = userService;
+            _ioHelper = ioHelper;
+            _loginMenu = loginMenu;
+            _timerService = timerSheduler;
         }
 
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            
-            JobScheduler jobScheduler = new JobScheduler();
-            jobScheduler.Start();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingUsersInDatabase();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
+
+            _timerService.Start();
 
             Console.WriteLine("Welcome to the application for administering the entire system of the Igners courier company!");
 
@@ -86,10 +115,15 @@ namespace DeliveryCompany
         private void AddUser()
         {
             var user = _ioHelperRegisterUser.CreateNewUser();
+            if (user == null)
+            {
+                return;
+            }
 
             _userService.Add(user);
 
             Console.WriteLine($"A new {user.Type} has been added.");
+            Console.WriteLine();
         }
     }
 }

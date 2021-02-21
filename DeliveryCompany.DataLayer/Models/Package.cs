@@ -35,6 +35,8 @@ namespace DeliveryCompany.DataLayer.Models
         public string RecipientStreetNumber { get; set; }
         public string RecipientCity { get; set; }
         public string RecipientPostCode { get; set; }
+        public double RecipientLat { get; set; }
+        public double RecipientLon { get; set; }
 
         public Package()
         {
@@ -46,8 +48,4 @@ namespace DeliveryCompany.DataLayer.Models
             Size = size;
         }
     }
-
-
-
-
 }
