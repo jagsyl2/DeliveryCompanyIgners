@@ -56,9 +56,8 @@ namespace DeliveryCompany.WebApi
                     TermsOfService = new Uri("https://webapiexamples.project.com/terms"),
                     Contact = new OpenApiContact
                     {
-                        Name = "Jakub Bulczak",
-                        Email = "kuba@codementors.pl",
-                        Url = new Uri("https://www.linkedin.com/in/jakub-bulczak-21873064/")
+                        Name = "Sylwia Ignerowicz",
+                        Email = "jagsyl@poczta.onet.pl",
                     },
                     License = new OpenApiLicense
                     {
@@ -67,21 +66,9 @@ namespace DeliveryCompany.WebApi
                     }
                 });
 
-            //Descriptions from summaries requires checking up a checkbox: RightClick on project -> Properties -> Build -> XML Documentation file . Leave the default path value.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             genOptions.IncludeXmlComments(xmlPath);
-
-            //If excepton of "file not found" is being thrown, remember to put following nodes into csproj file:
-            /*
-            <PropertyGroup>
-                <GenerateDocumentationFile>true</GenerateDocumentationFile>
-            </PropertyGroup>
-
-            <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-                <DocumentationFile>bin\$(Configuration)\$(AssemblyName).xml</DocumentationFile>
-            </PropertyGroup>
-             */
         }
     }
 }

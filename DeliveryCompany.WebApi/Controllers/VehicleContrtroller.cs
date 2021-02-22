@@ -1,10 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DeliveryCompany.BusinessLayer;
+using DeliveryCompany.DataLayer.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DeliveryCompany.WebApi.Controllers
 {
-    class VehicleContrtroller
+    [Route("api/vehicles")]
+    public class VehicleContrtroller : ControllerBase
     {
+        private readonly IVehicleService _vehicleService;
+
+        public VehicleContrtroller(IVehicleService vehicleService)
+        {
+            _vehicleService = vehicleService;
+        }
+
+        /*
+        Method: POST
+        URI: http://localhost:10500/api/vehicles
+        Body: 
+            {
+              "id": 0,
+              "mark": "Mercedes",
+              "model": "GLA",
+              "registrationNumber": "BA56421",
+              "loadCapacity": 400,
+              "averageSpeed": 110,
+              "driverId": 6
+            }
+        */
+        [HttpPost]
+        public void PostVehicle([FromBody] Vehicle vehicle)
+        {
+            _vehicleService.Add(vehicle);
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace DeliveryCompany.WebApi.Controllers
 {
