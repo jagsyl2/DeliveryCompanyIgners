@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.BusinessLayer
 {
     public interface IPackageService
     {
-        void Add(Package package);
+        Task AddAsync(Package package);
         void Update(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
@@ -25,12 +26,12 @@ namespace DeliveryCompany.BusinessLayer
             _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
         }
 
-        public void Add(Package package)
+        public async Task AddAsync(Package package)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Packages.Add(package);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

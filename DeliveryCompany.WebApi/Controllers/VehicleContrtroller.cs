@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.WebApi.Controllers
 {
@@ -29,9 +30,9 @@ namespace DeliveryCompany.WebApi.Controllers
             }
         */
         [HttpPost]
-        public void PostVehicle([FromBody] Vehicle vehicle)
+        public async Task PostVehicleAsync([FromBody] Vehicle vehicle)
         {
-            _vehicleService.Add(vehicle);
+            await _vehicleService.AddAsync(vehicle);
         }
     }
 }

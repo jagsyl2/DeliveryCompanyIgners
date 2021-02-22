@@ -4,12 +4,13 @@ using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.BusinessLayer
 {
     public interface IUserService
     {
-        void Add(User user);
+        Task AddAsync(User user);
         List<User> GetAllCustomers();
         List<User> GetAllDrivers();
         void UpdatingCoordinatesOfExistingUsersInDatabase();
@@ -32,12 +33,12 @@ namespace DeliveryCompany.BusinessLayer
             _packageService = packageService;
         }
 
-        public void Add(User user)
+        public async Task AddAsync(User user)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Users.Add(user);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

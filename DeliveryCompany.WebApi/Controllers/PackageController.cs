@@ -41,11 +41,11 @@ namespace DeliveryCompany.WebApi.Controllers
         */
 
         [HttpPost]
-        public async Task PostPackage([FromBody] Package package)
+        public async Task PostPackageAsync([FromBody] Package package)
         {
             try
             {
-                await _packageService.Add(package);
+                await _packageService.AddAsync(package);
             }
             catch(Exception e)
             {

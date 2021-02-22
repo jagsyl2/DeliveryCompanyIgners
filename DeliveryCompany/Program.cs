@@ -1,5 +1,6 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using System;
+using System.Threading.Tasks;
 using Unity;
 
 namespace DeliveryCompany
@@ -93,7 +94,7 @@ namespace DeliveryCompany
             var driverId = _ioHelperAddVehicle.SelectDriverId(drivers);
             var vehicle = _ioHelperAddVehicle.CreateNewVehicle(driverId);
             
-            _vehicleService.Add(vehicle);
+            _vehicleService.AddAsync(vehicle);
         }
 
         private void AddPackage()
@@ -109,7 +110,7 @@ namespace DeliveryCompany
             var customerId = _ioHelperAddPackage.SelectCustomerId(customers);
             var package = _ioHelperAddPackage.CreateNewPackage(customerId);
             
-            _packageService.Add(package);
+            _packageService.AddAsync(package);
         }
 
         private void AddUser()
@@ -120,7 +121,7 @@ namespace DeliveryCompany
                 return;
             }
 
-            _userService.Add(user);
+            _userService.AddAsync(user);
 
             Console.WriteLine($"A new {user.Type} has been added.");
             Console.WriteLine();

@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.DataLayer
 {
@@ -11,7 +13,7 @@ namespace DeliveryCompany.DataLayer
         DbSet<User> Users { get; set; }
         DbSet<Vehicle> Vehicles { get; set; }
         DatabaseFacade Database { get; }
-
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         int SaveChanges();
     }
 

@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.WebApi.Controllers
 {
@@ -33,9 +34,9 @@ namespace DeliveryCompany.WebApi.Controllers
             }
         */
         [HttpPost]
-        public void AddUser([FromBody] User user)
+        public async Task AddUserAsync([FromBody] User user)
         {
-            _userService.Add(user);
+            await _userService.AddAsync(user);
         }
     }
 }
