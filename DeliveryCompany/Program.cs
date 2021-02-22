@@ -54,8 +54,8 @@ namespace DeliveryCompany
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            _databaseManagmentService.UpdatingCoordinatesOfExistingUsersInDatabase();
-            _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
+            _userService.UpdatingCoordinatesOfExistingUsersInDatabase();
+            _userService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
 
             _timerService.Start();
 

@@ -8,9 +8,9 @@ namespace DeliveryCompany.BusinessLayer
 {
     public interface IVehicleService
     {
-        public void Add(Vehicle vehicle);
-        public List<Vehicle> GetAllVehicles();
-        public Vehicle GetVehicle(int courierId);
+        void Add(Vehicle vehicle);
+        List<Vehicle> GetAllVehicles();
+        Vehicle GetVehicle(int courierId);
     }
 
     public class VehicleService : IVehicleService

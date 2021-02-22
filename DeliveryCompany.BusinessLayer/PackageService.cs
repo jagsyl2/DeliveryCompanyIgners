@@ -9,10 +9,11 @@ namespace DeliveryCompany.BusinessLayer
 {
     public interface IPackageService
     {
-        public void Add(Package package);
-        public void Update(Package package);
-        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
-        public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
+        void Add(Package package);
+        void Update(Package package);
+        void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
+        List<Package> GetAllPackagesWithoutCoordinates();
     }
 
     public class PackageService : IPackageService

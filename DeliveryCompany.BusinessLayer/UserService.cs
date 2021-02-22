@@ -1,4 +1,5 @@
-﻿using DeliveryCompany.DataLayer;
+﻿using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,27 @@ namespace DeliveryCompany.BusinessLayer
 {
     public interface IUserService
     {
-        public void Add(User user);
-        public List<User> GetAllCustomers();
-        public List<User> GetAllDrivers();
+        void Add(User user);
+        List<User> GetAllCustomers();
+        List<User> GetAllDrivers();
+        void UpdatingCoordinatesOfExistingUsersInDatabase();
+        void UpdatingCoordinatesOfExistingRecipientsInDatabase();
     }
 
     public class UserService : IUserService
     {
         private readonly Func<IDeliveryCompanyDbContext> _deliveryCompanyDbContextFactoryMethod;
+        private readonly ILocationService _locationService;
+        private readonly IPackageService _packageService;
 
-        public UserService(Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod)
+        public UserService(
+            Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod,
+            ILocationService locationService,
+            IPackageService packageService)
         {
             _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
+            _locationService = locationService;
+            _packageService = packageService;
         }
 
         public void Add(User user)
@@ -70,6 +80,53 @@ namespace DeliveryCompany.BusinessLayer
                     .AsQueryable()
                     .Where(x => (x.lat == 999 || x.lon == 999))
                     .ToList();
+            }
+        }
+
+        public void UpdatingCoordinatesOfExistingUsersInDatabase()
+        {
+            var users = GetAllUsersWithoutCoordinates();
+
+            foreach (var user in users)
+            {
+                try
+                {
+                    var userCoordinate = _locationService.ChangeLocationToCoordinates(user);
+                    user.lat = userCoordinate.Lat;
+                    user.lon = userCoordinate.Lon;
+
+                    Update(user);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"User no {user.Id} addresses in the database does not exist! Check it!");
+                }
+            }
+        }
+
+        public void UpdatingCoordinatesOfExistingRecipientsInDatabase()
+        {
+            var packages = _packageService.GetAllPackagesWithoutCoordinates();
+
+            foreach (var package in packages)
+            {
+                try
+                {
+                    var packageCoordinate = _locationService.ChangeLocationToCoordinates(
+                                                package.RecipientCity,
+                                                package.RecipientPostCode,
+                                                package.RecipientStreet,
+                                                package.RecipientStreetNumber);
+
+                    package.RecipientLat = packageCoordinate.Lat;
+                    package.RecipientLon = packageCoordinate.Lon;
+
+                    _packageService.Update(package);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Package recipient addresses no {package.Id} in the database does not exist! Check it!");
+                }
             }
         }
     }
