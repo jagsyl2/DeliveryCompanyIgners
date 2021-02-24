@@ -8,7 +8,7 @@ using System;
 using Unity;
 using Unity.Injection;
 
-namespace DeliveryCompany
+namespace DeliveryCompany.WebApi
 {
     public class UnityDiContainerProvider
     {

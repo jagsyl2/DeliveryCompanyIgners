@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace DeliveryCompany.WebApi.Controllers
+namespace DeliveryCompany.TopShelf.Controllers
 {
     [Route("api/packages")]
     public class PackageController : ControllerBase

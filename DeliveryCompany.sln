@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.EventStore.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.WebApi", "DeliveryCompany.WebApi\DeliveryCompany.WebApi.csproj", "{15991CD1-8ADC-4A9F-B942-9509AE1402A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryCompany.TopShelf", "DeliveryCompany.TopShelf\DeliveryCompany.TopShelf.csproj", "{1432D482-7497-4182-AD81-EE3576CFAE3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryCompany.TopShelf", "DeliveryCompany.TopShelf\DeliveryCompany.TopShelf.csproj", "{1432D482-7497-4182-AD81-EE3576CFAE3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryCompany.AppForDrivers", "DeliveryCompany.AppForDrivers\DeliveryCompany.AppForDrivers.csproj", "{2682351F-5EEC-4F60-BDC9-88C60E8EC36B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{1432D482-7497-4182-AD81-EE3576CFAE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1432D482-7497-4182-AD81-EE3576CFAE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1432D482-7497-4182-AD81-EE3576CFAE3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2682351F-5EEC-4F60-BDC9-88C60E8EC36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2682351F-5EEC-4F60-BDC9-88C60E8EC36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2682351F-5EEC-4F60-BDC9-88C60E8EC36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2682351F-5EEC-4F60-BDC9-88C60E8EC36B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,7 +3,7 @@ using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace DeliveryCompany.WebApi.Controllers
+namespace DeliveryCompany.TopShelf.Controllers
 {
     [Route("api/vehicles")]
     public class VehicleContrtroller : ControllerBase
