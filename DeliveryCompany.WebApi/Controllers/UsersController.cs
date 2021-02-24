@@ -38,5 +38,11 @@ namespace DeliveryCompany.WebApi.Controllers
         {
             await _userService.AddAsync(user);
         }
+
+        [HttpGet]
+        public User GetUser([FromBody] User user)
+        {
+            return _userService.GetDriver(user);
+        }
     }
 }

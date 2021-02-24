@@ -13,6 +13,7 @@ namespace DeliveryCompany.BusinessLayer
         Task AddAsync(User user);
         List<User> GetAllCustomers();
         List<User> GetAllDrivers();
+        public User GetDriver(User user);
         void UpdatingCoordinatesOfExistingUsersInDatabase();
         void UpdatingCoordinatesOfExistingRecipientsInDatabase();
     }
@@ -70,6 +71,17 @@ namespace DeliveryCompany.BusinessLayer
                     .AsQueryable()
                     .Where(x => x.Type == TypeOfUser.Driver && (x.lat != 999 || x.lon != 999))
                     .ToList();
+            }
+        }
+
+        public User GetDriver(User user)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Users
+                    .AsQueryable()
+                    .Where(x => x.Type == TypeOfUser.Driver && x.Email == user.Email && x.Password == user.Password)
+                    .FirstOrDefault();
             }
         }
 

@@ -39,6 +39,7 @@ namespace DeliveryCompany
 
                     Email = _ioHelper.GetEMailFromUser("What's your e-mail address?"),
                     Type = _ioHelper.GetTypeOfUserFromUser("Are you registering as a "),
+                    Password = _ioHelper.GetPasswordFromUser("Enter the password:"),
                 };
 
                 try

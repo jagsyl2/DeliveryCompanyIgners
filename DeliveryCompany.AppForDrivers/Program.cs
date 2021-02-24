@@ -34,7 +34,7 @@ namespace DeliveryCompany.AppForDrivers
                 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
+                    //var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
 
 
                 }
