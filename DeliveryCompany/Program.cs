@@ -54,8 +54,8 @@ namespace DeliveryCompany
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            _databaseManagmentService.UpdatingCoordinatesOfExistingUsersInDatabase();
-            _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
+            _userService.UpdatingCoordinatesOfExistingUsersInDatabase();
+            _userService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
 
             _timerService.Start();
 
@@ -93,7 +93,7 @@ namespace DeliveryCompany
             var driverId = _ioHelperAddVehicle.SelectDriverId(drivers);
             var vehicle = _ioHelperAddVehicle.CreateNewVehicle(driverId);
             
-            _vehicleService.Add(vehicle);
+            _vehicleService.AddAsync(vehicle).Wait();
         }
 
         private void AddPackage()
@@ -108,8 +108,19 @@ namespace DeliveryCompany
 
             var customerId = _ioHelperAddPackage.SelectCustomerId(customers);
             var package = _ioHelperAddPackage.CreateNewPackage(customerId);
-            
-            _packageService.Add(package);
+
+            try
+            {
+                _packageService.AddAsync(package).Wait();
+
+                Console.WriteLine("The new package has been added!");
+                Console.WriteLine();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("The given address does not exist. Try again...");
+                return;
+            }
         }
 
         private void AddUser()
@@ -120,10 +131,18 @@ namespace DeliveryCompany
                 return;
             }
 
-            _userService.Add(user);
+            try
+            {
+                _userService.AddAsync(user).Wait();
 
-            Console.WriteLine($"A new {user.Type} has been added.");
-            Console.WriteLine();
+                Console.WriteLine($"A new {user.Type} has been added.");
+                Console.WriteLine();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("The given address does not exist. Try again...");
+                return;
+            }
         }
     }
 }
