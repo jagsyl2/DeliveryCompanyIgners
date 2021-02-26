@@ -35,13 +35,24 @@ namespace DeliveryCompany.BusinessLayer
             _packageService = packageService;
         }
 
-        public async Task AddAsync(User user)
+        public async Task AddAsync(User newUser)
         {
+            var user = CoordinateAssignment(newUser);
+
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Users.Add(user);
                 await context.SaveChangesAsync();
             }
+        }
+
+        private User CoordinateAssignment(User user)
+        {
+            var locationCoordinates = _locationService.ChangeLocationToCoordinates(user);
+            user.lat = locationCoordinates.Lat;
+            user.lon = locationCoordinates.Lon;
+
+            return user;
         }
 
         public void Update(User user)

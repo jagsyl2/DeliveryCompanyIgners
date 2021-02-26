@@ -9,7 +9,6 @@ namespace DeliveryCompany.BusinessLayer.Serializers
     {
         void Serialize(string filePath, List<Package> dataSet);
         List<JsonLocationData> DeserializeLocation(string locationData);
-        string Deserialize(string filePath);
     }
 
     public class JsonSerializer : IJsonSerializer
@@ -25,13 +24,6 @@ namespace DeliveryCompany.BusinessLayer.Serializers
             var data = JsonConvert.DeserializeObject<List<JsonLocationData>>(locationData);
 
             return data;
-        }
-        public string Deserialize(string filePath)
-        {
-            var jsonData = File.ReadAllText(filePath);
-            //var wayBill = JsonConvert.DeserializeObject<List<Package>>(jsonData);
-
-            return jsonData;
         }
     }
 }

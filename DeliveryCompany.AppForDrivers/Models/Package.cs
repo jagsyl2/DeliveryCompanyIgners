@@ -37,15 +37,5 @@ namespace DeliveryCompany.AppForDrivers.Models
         public string RecipientPostCode { get; set; }
         public double RecipientLat { get; set; }
         public double RecipientLon { get; set; }
-
-        public Package()
-        {
-        }
-
-        public Package(int id, PackageSize size)
-        {
-            Id = id;
-            Size = size;
-        }
     }
 }

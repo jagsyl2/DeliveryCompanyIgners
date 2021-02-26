@@ -108,8 +108,19 @@ namespace DeliveryCompany
 
             var customerId = _ioHelperAddPackage.SelectCustomerId(customers);
             var package = _ioHelperAddPackage.CreateNewPackage(customerId);
-            
-            _packageService.AddAsync(package).Wait();
+
+            try
+            {
+                _packageService.AddAsync(package).Wait();
+
+                Console.WriteLine("The new package has been added!");
+                Console.WriteLine();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("The given address does not exist. Try again...");
+                return;
+            }
         }
 
         private void AddUser()
@@ -120,10 +131,18 @@ namespace DeliveryCompany
                 return;
             }
 
-            _userService.AddAsync(user).Wait();
+            try
+            {
+                _userService.AddAsync(user).Wait();
 
-            Console.WriteLine($"A new {user.Type} has been added.");
-            Console.WriteLine();
+                Console.WriteLine($"A new {user.Type} has been added.");
+                Console.WriteLine();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("The given address does not exist. Try again...");
+                return;
+            }
         }
     }
 }

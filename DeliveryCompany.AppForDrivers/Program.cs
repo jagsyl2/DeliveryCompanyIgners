@@ -4,15 +4,14 @@ using System;
 using System.Net.Http;
 using System.Net;
 using System.Collections.Generic;
-using System.IO;
 
 namespace DeliveryCompany.AppForDrivers
 {
     class Program
     {
-        private IoHelper _ioHelper = new IoHelper();
+        private readonly IoHelper _ioHelper = new IoHelper();
 
-        //private User driver = null;
+        private bool _exit = false;
 
         static void Main(string[] args)
         {
@@ -21,13 +20,17 @@ namespace DeliveryCompany.AppForDrivers
 
         private void Run()
         {
-            LogIn();
+            do
+            {
+                var driver = GetDriver();
+
+                LogIn(driver);
+            }
+            while (!_exit);
         }
 
-        private void LogIn()
+        private void LogIn(User driver)
         {
-            var driver = GetDriverFromUser();
-
             using (var httpClient = new HttpClient())
             {
                 var response = httpClient.GetAsync($@"http://localhost:10500/api/users/find?email={driver.Email}&password={driver.Password}").Result;
@@ -35,26 +38,8 @@ namespace DeliveryCompany.AppForDrivers
                 
                 if (response.StatusCode==HttpStatusCode.OK)
                 {
-                    var reponseObject = JsonConvert.DeserializeObject<User>(responseText);
-                    //var date = _fastForwardTimeProvider.Now.ToString("yyyy-MM-dd");
-                    //var filePath = Path.Combine(path.FullName, $"{vehicle.DriverId}_{date}.json");
-
-                    var response2 = httpClient.GetAsync($@"http://localhost:10500/api/packages/{reponseObject.Id}").Result;
-                    var responseText2 = response2.Content.ReadAsStringAsync().Result;
-                    if (response2.StatusCode == HttpStatusCode.OK)
-                    {
-                        var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText2);
-                        foreach (var package in responseObject)
-                        {
-                            PrintPackages(package);
-                        }
-                        Console.WriteLine($"Success. Response content: ");
-                        //PrintDriver(responseObject);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Failed again. Status code: {response.StatusCode}");
-                    }
+                    var responseObject = JsonConvert.DeserializeObject<User>(responseText);
+                    Menu(responseObject);
                 }
                 else
                 {
@@ -63,18 +48,55 @@ namespace DeliveryCompany.AppForDrivers
             }
         }
 
-        private void PrintPackages(Package package)
+        private void Menu(User user)
         {
-            Console.WriteLine($"Name: {package.Number}, Breed: {package.RecipientCity}");
+            do
+            {
+                Console.WriteLine("Choose option:");
+                Console.WriteLine("1. Get waybill");
+                Console.WriteLine("2. Exit");
+
+                var option = _ioHelper.GetIntFromUser("Enter option no:");
+
+                switch (option)
+                {
+                    case 1:
+                        GetWaybill(user);
+                        break;
+                    case 2:
+                        _exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Unknown option");
+                        break;
+                }
+            } 
+            while (!_exit);
         }
 
-        private void PrintDriver(User driver)
+        private void GetWaybill(User user)
         {
-            Console.WriteLine($"Name: {driver.Name}, Breed: {driver.Id}");
-        }
-    
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.GetAsync($@"http://localhost:10500/api/packages/waybill/{user.Id}").Result;
+                var responseText = response.Content.ReadAsStringAsync().Result;
 
-        private User GetDriverFromUser()
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
+                    foreach (var package in responseObject)
+                    {
+                        _ioHelper.PrintPackages(package);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Failed again. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private User GetDriver()
         {
             Console.WriteLine("Welcome in Igners' Delivery Company!");
             Console.WriteLine("If you want to download the waybill, please log in.");

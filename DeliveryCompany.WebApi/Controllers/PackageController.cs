@@ -45,8 +45,11 @@ namespace DeliveryCompany.WebApiTopShelf.Controllers
             await _packageService.AddAsync(package);
         }
 
-        [HttpGet("{id}")]
-        public async Task<List<Package>> GetPackagesAsync(int id)
+        /// <summary>
+        /// Enter the driver's id
+        /// </summary>
+        [HttpGet("waybill/{id}")]
+        public async Task<List<Package>> GetPackagesOnWaybillAsync(int id)
         {
             return await _packageService.GetPackagesOnCouriersWaybillAsync(id);
         }

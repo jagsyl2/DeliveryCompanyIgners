@@ -1,23 +1,18 @@
 ﻿using DeliveryCompany.AppForDrivers.Models;
 using System;
-using System.Collections.Generic;
 
 namespace DeliveryCompany.AppForDrivers
 {
-    public interface IIoHelper
+    public class IoHelper
     {
-        string GetEMailFromUser(string message);
-        int GetIntFromUser(string message);
-        PackageSize GetSizeFromUser(string message);
-        string GetStringFromUser(string message);
-        TypeOfUser GetTypeOfUserFromUser(string massage);
-        void PrintUser(User user);
-        void PrintUsers(List<User> users, string message);
-        void WriteString(string message);
-    }
+        public void PrintPackages(Package package)
+        {
+            Console.WriteLine($"Package Id: {package.Id} - Number: {package.Number} - Package size: {package.Size}");
+            Console.WriteLine($"Sender Id: {package.SenderId}, Sender: {package.Sender.Name} {package.Sender.Surname}, location: {package.Sender.lat}, {package.Sender.lon}");
+            Console.WriteLine($"Recipient: {package.RecipientName} {package.RecipientSurname}, location: {package.RecipientLat}, {package.RecipientLon}");
+            Console.WriteLine();
+        }
 
-    public class IoHelper : IIoHelper
-    {
         public string GetStringFromUser(string message)
         {
             Console.WriteLine($"{message}");
@@ -34,86 +29,6 @@ namespace DeliveryCompany.AppForDrivers
             }
 
             return userChoice;
-        }
-
-        public string GetEMailFromUser(string message)
-        {
-            string eMail;
-            bool validation;
-
-            do
-            {
-                eMail = GetStringFromUser(message);
-                validation = true;
-
-                if (!eMail.Contains("@"))
-                {
-                    WriteString("Incorrect adress e-mail (must contain the @ sign). Try again...");
-
-                    validation = false;
-                    continue;
-                }
-            }
-            while (validation == false);
-
-            return eMail;
-        }
-
-        public void WriteString(string message)
-        {
-            Console.WriteLine(message);
-            Console.WriteLine();
-        }
-
-        public TypeOfUser GetTypeOfUserFromUser(string massage)
-        {
-            var correctValues = "";
-
-            foreach (var typeOfUser in (TypeOfUser[])Enum.GetValues(typeof(TypeOfUser)))
-            {
-                correctValues += $"{typeOfUser},";
-            }
-
-            object result;
-            while (!Enum.TryParse(typeof(TypeOfUser), GetStringFromUser($"{massage} [{correctValues}]:"), out result))
-            {
-                Console.WriteLine("We don't know what to do. Please try again and use value from brackets.");
-            }
-
-            return (TypeOfUser)result;
-        }
-
-        public PackageSize GetSizeFromUser(string message)
-        {
-            var correctValues = "";
-
-            foreach (var item in (PackageSize[])Enum.GetValues(typeof(PackageSize)))
-            {
-                correctValues += $"{item},";
-            }
-
-            object result;
-
-            while (!Enum.TryParse(typeof(PackageSize), GetStringFromUser($"{message} [{correctValues}]:"), out result))
-            {
-                Console.WriteLine("We don't know what size your packege is. Please try again and use value from brackets.");
-            }
-
-            return (PackageSize)result;
-        }
-
-        public void PrintUsers(List<User> users, string message)
-        {
-            Console.WriteLine(message);
-            foreach (var user in users)
-            {
-                PrintUser(user);
-            }
-        }
-
-        public void PrintUser(User user)
-        {
-            Console.WriteLine($"{user.Id}.{user.Name} {user.Surname} - {user.Type}");
         }
     }
 }
