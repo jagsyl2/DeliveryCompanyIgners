@@ -3,7 +3,7 @@ using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace DeliveryCompany.WebApi.Controllers
+namespace DeliveryCompany.WebApiTopShelf.Controllers
 {
     [Route("api/users")]
     public class UsersController : ControllerBase
@@ -39,10 +39,15 @@ namespace DeliveryCompany.WebApi.Controllers
             await _userService.AddAsync(user);
         }
 
-        [HttpGet]
-        public User GetUser([FromBody] User user)
+        /*
+        Method: POST
+        URI: http://localhost:10500/api/users/find?email={email}&password={password}
+        Body: 
+        */
+        [HttpGet("find")]
+        public async Task<User> GetUserAsync([FromQuery] string email, [FromQuery] string password)
         {
-            return _userService.GetDriver(user);
+            return await _userService.GetDriverAsync(email, password);
         }
     }
 }

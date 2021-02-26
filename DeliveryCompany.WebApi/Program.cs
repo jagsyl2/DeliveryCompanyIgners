@@ -1,74 +1,34 @@
-﻿using Microsoft.AspNetCore;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Topshelf;
+using Unity;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Unity.Microsoft.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Reflection;
-using System.IO;
 
-namespace DeliveryCompany.WebApi
+namespace DeliveryCompany.WebApiTopShelf
 {
     class Program
     {
         static void Main(string[] args)
         {
             var container = new UnityDiContainerProvider().GetContainer();
+            var appHost = container.Resolve<AppHost>();
 
-            WebHost
-                .CreateDefaultBuilder()
-                .UseUnityServiceProvider(container)
-                .ConfigureServices(services =>
+            var rc = HostFactory.Run(x =>
+            {
+                x.Service<AppHost>(s =>
                 {
-                    services.AddMvc();
-                    services.AddSwaggerGen(SwaggerDocsConfig);
-                })
-                .Configure(app => {
-                    app.UseRouting();
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapControllers();
-                    });
-                    app.UseCors();
-                    app.UseSwagger();
-                    app.UseSwaggerUI(c =>
-                    {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiExample V1");
-                        c.RoutePrefix = string.Empty;
-                    });
-                })
-                .UseUrls("http://*:10500")
-                .Build()
-                .Run();
-        }
-
-        private static void SwaggerDocsConfig(SwaggerGenOptions genOptions)
-        {
-            genOptions.SwaggerDoc(
-                "v1",
-                new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "WebApiExample",
-                    Description = "A simple example ASP.NET Core Web API",
-                    TermsOfService = new Uri("https://webapiexamples.project.com/terms"),
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Sylwia Ignerowicz",
-                        Email = "jagsyl@poczta.onet.pl",
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "Use some license",
-                        Url = new Uri("https://webapiexamples.project.com/license")
-                    }
+                    s.ConstructUsing(sf => appHost);
+                    s.WhenStarted(tc => tc.Start());
+                    s.WhenStopped(tc => tc.Stop());
                 });
+                x.RunAsLocalSystem();
 
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            genOptions.IncludeXmlComments(xmlPath);
+                x.SetDescription("DCIgners.WebApi.TopShelf service");
+                x.SetDisplayName("DeliveryCompanyIgners.WebApi.TopShelf");
+                x.SetServiceName("DeliveryCompanyIgners.WebApi.TopShelf");
+            });
+
+            var exitCode = (int)Convert.ChangeType(rc, rc.GetTypeCode());
+            Environment.ExitCode = exitCode;
         }
     }
 }

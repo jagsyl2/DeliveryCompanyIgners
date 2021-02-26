@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace DeliveryCompany.WebApi.Controllers
+namespace DeliveryCompany.WebApiTopShelf.Controllers
 {
     [Route("api/status")]
     public class StatusController : ControllerBase

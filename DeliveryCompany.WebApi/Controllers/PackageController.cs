@@ -1,10 +1,10 @@
 ﻿using DeliveryCompany.BusinessLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DeliveryCompany.WebApi.Controllers
+namespace DeliveryCompany.WebApiTopShelf.Controllers
 {
     [Route("api/packages")]
     public class PackageController : ControllerBase
@@ -39,18 +39,16 @@ namespace DeliveryCompany.WebApi.Controllers
               "recipientLon": 18.5
             }
         */
-
         [HttpPost]
         public async Task PostPackageAsync([FromBody] Package package)
         {
-            try
-            {
-                await _packageService.AddAsync(package);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            await _packageService.AddAsync(package);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<List<Package>> GetPackagesAsync(int id)
+        {
+            return await _packageService.GetPackagesOnCouriersWaybillAsync(id);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.BusinessLayer.Distances;
 using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DeliveryCompany.BusinessLayer
         Task AddAsync(User user);
         List<User> GetAllCustomers();
         List<User> GetAllDrivers();
-        public User GetDriver(User user);
+        public Task<User> GetDriverAsync(string email, string password);
         void UpdatingCoordinatesOfExistingUsersInDatabase();
         void UpdatingCoordinatesOfExistingRecipientsInDatabase();
     }
@@ -74,14 +75,14 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public User GetDriver(User user)
+        public async Task<User> GetDriverAsync(string email, string password)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                return context.Users
+                return await context.Users
                     .AsQueryable()
-                    .Where(x => x.Type == TypeOfUser.Driver && x.Email == user.Email && x.Password == user.Password)
-                    .FirstOrDefault();
+                    .Where(x => x.Type == TypeOfUser.Driver && x.Email == email && x.Password == password)
+                    .FirstOrDefaultAsync();
             }
         }
 

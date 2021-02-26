@@ -14,6 +14,7 @@ namespace DeliveryCompany.BusinessLayer
         void Update(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
+        Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id);
         List<Package> GetAllPackagesWithoutCoordinates();
     }
 
@@ -61,6 +62,19 @@ namespace DeliveryCompany.BusinessLayer
                     .Include(x => x.Sender)
                     .Where(x => (x.State == stateOfPackage && (x.RecipientLat != 999 || x.RecipientLon != 999)))
                     .ToList();
+            }
+        }
+
+        public async Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                var vehicle = context.Vehicles.FirstOrDefault(x => x.DriverId == id);
+
+                return await context.Packages
+                    .Include(x => x.Sender)
+                    .Where(x => ((x.State == StateOfPackage.Given || x.State == StateOfPackage.OnTheWay) && x.VehicleNumber==vehicle.Id))
+                    .ToListAsync();
             }
         }
 

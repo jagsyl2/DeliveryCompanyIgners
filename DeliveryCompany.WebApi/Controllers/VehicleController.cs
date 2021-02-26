@@ -3,14 +3,14 @@ using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace DeliveryCompany.TopShelf.Controllers
+namespace DeliveryCompany.WebApiTopShelf.Controllers
 {
     [Route("api/vehicles")]
-    public class VehicleContrtroller : ControllerBase
+    public class VehicleController : ControllerBase
     {
         private readonly IVehicleService _vehicleService;
 
-        public VehicleContrtroller(IVehicleService vehicleService)
+        public VehicleController(IVehicleService vehicleService)
         {
             _vehicleService = vehicleService;
         }
