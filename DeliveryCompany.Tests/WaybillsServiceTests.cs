@@ -1,5 +1,7 @@
 using DeliveryCompany.BusinessLayer;
+using DeliveryCompany.BusinessLayer.Distances;
 using DeliveryCompany.BusinessLayer.Serializers;
+using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer.Models;
 using FluentAssertions;
 using Moq;
@@ -25,13 +27,15 @@ namespace DeliveryCompany.Tests
             var packageServiceMock = new Mock<IPackageService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
             var userServiceMock = new Mock<IUserService>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             int nearestDistance = service.FindTheNearestCourier(distances);
 
@@ -50,7 +54,7 @@ namespace DeliveryCompany.Tests
 
             var packageServiceMock = new Mock<IPackageService>();
             packageServiceMock
-                .Setup(x => x.CheckPackagesAwaitingPosting())
+                .Setup(x => x.GetPackagesWithStatus(StateOfPackage.AwaitingPosting))
                 .Returns(packages);
 
             var userServiceMock = new Mock<IUserService>();
@@ -61,13 +65,15 @@ namespace DeliveryCompany.Tests
             var locationServiceMock = new Mock<ILocationService>();
             var vehicleServiceMock = new Mock<IVehicleService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
 
@@ -78,40 +84,58 @@ namespace DeliveryCompany.Tests
         public void AssignPackagesToCouriers_GivePackageAndDriverWithoutVehile_ReturnEmptyList()
         {
             List<Package> packages = new List<Package>();
-            packages.Add(new Package() { 
-                Id =3,
-                RecipientStreet = "Wielkopolska",
-                RecipientStreetNumber = "56",
-                RecipientCity = "Gdynia",
-                Size = PackageSize.Average });
+            packages.Add(new Package()
+            {
+                Id = 3,
+                RecipientLat = 54,
+                RecipientLon = 18,
+                Sender = new User()
+                {
+                    lat = 53.5,
+                    lon = 19
+                },
+                Size = PackageSize.Average
+            });
 
             List<User> users = new List<User>();
-            users.Add(new User() { Id=5, Street="Œliska", StreetNumber="28C", City="Gdynia"});
+            users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
 
             Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
             Dictionary<int, double> distance = new Dictionary<int, double>();
             distance.Add(3, 20);
 
+            List<Vehicle> vehicles = new List<Vehicle>();
+
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock
+                .Setup(x => x.GetAllDrivers())
+                .Returns(users);
+
             var vehicleServiceMock = new Mock<IVehicleService>();
+            vehicleServiceMock
+                .Setup(x => x.GetAllVehicles())
+                .Returns(vehicles);
+
             vehicleServiceMock
                 .Setup(x => x.GetVehicle(5))
                 .Returns(new Vehicle());
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
-                .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+                .Setup(y => y.CountDistancesFromPackageToCouriers(users, It.IsAny<Package>()))
                 .Returns(distance);
 
             var packageServiceMock = new Mock<IPackageService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
-            var userServiceMock = new Mock<IUserService>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 
@@ -125,43 +149,63 @@ namespace DeliveryCompany.Tests
             packages.Add(new Package()
             {
                 Id = 3,
-                RecipientStreet = "Wielkopolska",
-                RecipientStreetNumber = "56",
-                RecipientCity = "Gdynia",
+                RecipientLat = 54,
+                RecipientLon = 18,
+                Sender = new User()
+                {
+                    lat = 53.5,
+                    lon = 19 
+                },
                 Size = PackageSize.Average
             });
 
             List<User> users = new List<User>();
-            users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
-            users.Add(new User() { Id = 6, Street = "Niska", StreetNumber = "5", City = "Bydgoszcz" });
+            users.Add(new User() { Id = 5, lat = 52, lon = 21 });
+            users.Add(new User() { Id = 6, lat = 53, lon = 20 });
 
             Dictionary<int, double> distance = new Dictionary<int, double>();
             distance.Add(5, 20);
             distance.Add(6, 150);
 
+            List<Vehicle> vehicles = new List<Vehicle>();
+            vehicles.Add(new Vehicle() { Id = 5, AverageSpeed = 120 });
+            vehicles.Add(new Vehicle() { Id = 6, AverageSpeed = 100 });
+
             Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
             vehiclesCapacity.Add(5, 200);
 
+            LocationCoordinates firstPackageSender = new LocationCoordinates();
+
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock
+                .Setup(x => x.GetAllDrivers())
+                .Returns(users);
+
             var vehicleServiceMock = new Mock<IVehicleService>();
             vehicleServiceMock
+                .Setup(x => x.GetAllVehicles())
+                .Returns(vehicles);
+
+            vehicleServiceMock
                 .Setup(x => x.GetVehicle(5))
-                .Returns(new Vehicle() {Id=5 });
+                .Returns(new Vehicle() { Id = 5 });
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
-                .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+                .Setup(y => y.CountDistancesFromPackageToCouriers(users, It.IsAny<Package>()))
                 .Returns(distance);
 
             var packageServiceMock = new Mock<IPackageService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
-            var userServiceMock = new Mock<IUserService>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 
@@ -174,11 +218,11 @@ namespace DeliveryCompany.Tests
             List<Package> packages = new List<Package>();
 
             List<User> users = new List<User>();
-            users.Add(new User() {Id=1, Type = TypeOfUser.Driver });
+            users.Add(new User() { Id = 1, Type = TypeOfUser.Driver });
 
             var packageServiceMock = new Mock<IPackageService>();
             packageServiceMock
-                .Setup(x => x.CheckPackagesAwaitingPosting())
+                .Setup(x => x.GetPackagesWithStatus(StateOfPackage.AwaitingPosting))
                 .Returns(packages);
 
             var userServiceMock = new Mock<IUserService>();
@@ -189,13 +233,15 @@ namespace DeliveryCompany.Tests
             var locationServiceMock = new Mock<ILocationService>();
             var vehicleServiceMock = new Mock<IVehicleService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             List<Package> todaysPackage = service.PreparingTodaysParcelsForShippin();
 
@@ -206,10 +252,10 @@ namespace DeliveryCompany.Tests
         public void AssignPackagesToCouriers_Give4Packages_ReturnListWith3Positions()
         {
             List<Package> packages = new List<Package>();
-            packages.Add(new Package() { Id = 1, Size = PackageSize.Average });
-            packages.Add(new Package() { Id = 2, Size = PackageSize.Large });
-            packages.Add(new Package() { Id = 3, Size = PackageSize.Average });
-            packages.Add(new Package() { Id = 4, Size = PackageSize.Small });
+            packages.Add(new Package() { Id = 1, Size = PackageSize.Average, Sender = new User() { lat = 53.5, lon = 19 }});
+            packages.Add(new Package() { Id = 2, Size = PackageSize.Large, Sender = new User() { lat = 53.5, lon = 19 } });
+            packages.Add(new Package() { Id = 3, Size = PackageSize.Average, Sender = new User() { lat = 53.5, lon = 19 } });
+            packages.Add(new Package() { Id = 4, Size = PackageSize.Small, Sender = new User() { lat = 53.5, lon = 19 } });
 
             List<User> users = new List<User>();
             users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
@@ -222,26 +268,40 @@ namespace DeliveryCompany.Tests
             Dictionary<int, int> vehiclesCapacity = new Dictionary<int, int>();
             vehiclesCapacity.Add(5, 220);
 
+            List<Vehicle> vehicles = new List<Vehicle>();
+            vehicles.Add(new Vehicle() { Id = 5, AverageSpeed = 120 });
+            vehicles.Add(new Vehicle() { Id = 6, AverageSpeed = 100 });
+
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock
+                .Setup(x => x.GetAllDrivers())
+                .Returns(users);
+
             var vehicleServiceMock = new Mock<IVehicleService>();
             vehicleServiceMock
                 .Setup(x => x.GetVehicle(5))
                 .Returns(new Vehicle() { Id = 5 });
 
+            vehicleServiceMock
+                .Setup(x => x.GetAllVehicles())
+                .Returns(vehicles);
+
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
-                .Setup(y => y.CountDistancesFromPackageToCourier(users, It.IsAny<Package>()))
+                .Setup(y => y.CountDistancesFromPackageToCouriers(users, It.IsAny<Package>()))
                 .Returns(distance);
 
             var packageServiceMock = new Mock<IPackageService>();
             var jsonSerializerMock = new Mock<IJsonSerializer>();
-            var userServiceMock = new Mock<IUserService>();
+            var timeProvider = new Mock<ITimeProvider>();
 
             var service = new WaybillsService(
                 locationServiceMock.Object,
                 vehicleServiceMock.Object,
                 packageServiceMock.Object,
                 jsonSerializerMock.Object,
-                userServiceMock.Object);
+                userServiceMock.Object,
+                timeProvider.Object);
 
             List<Package> todaysPackage = service.AssignPackagesToCouriers(packages, users, vehiclesCapacity);
 

@@ -1,6 +1,7 @@
 ﻿using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,14 +11,22 @@ namespace DeliveryCompany.BusinessLayer
     {
         public void Add(Package package);
         public void Update(Package package);
-        public List<Package> CheckPackagesAwaitingPosting();
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
     }
 
     public class PackageService : IPackageService
     {
+        private Func<IDeliveryCompanyDbContext> _deliveryCompanyDbContextFactoryMethod;
+
+        public PackageService(Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod)
+        {
+            _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
+        }
+
         public void Add(Package package)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Packages.Add(package);
                 context.SaveChanges();
@@ -26,20 +35,40 @@ namespace DeliveryCompany.BusinessLayer
 
         public void Update(Package package)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                context.Update(package);
+                context.Packages.Update(package);
                 context.SaveChanges();
             }
         }
 
-        public List<Package> CheckPackagesAwaitingPosting()
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage)
         {
-            using (var context = new DeliveryCompanyDbContext())
+            foreach (var package in packages)
+            {
+                package.State = stateOfPackage;
+                Update(package);
+            }
+        }
+
+        public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Packages
                     .Include(x => x.Sender)
-                    .Where(x => x.State == StateOfPackage.AwaitingPosting)
+                    .Where(x => (x.State == stateOfPackage && (x.RecipientLat != 999 || x.RecipientLon != 999)))
+                    .ToList();
+            }
+        }
+
+        public List<Package> GetAllPackagesWithoutCoordinates()
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Packages
+                    .AsQueryable()
+                    .Where(x => (x.RecipientLat == 999 || x.RecipientLon == 999))
                     .ToList();
             }
         }

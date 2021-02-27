@@ -14,5 +14,4 @@
         public string type { get; set; }
         public float importance { get; set; }
     }
-
 }
