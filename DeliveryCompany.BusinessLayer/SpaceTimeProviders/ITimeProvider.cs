@@ -4,6 +4,6 @@ namespace DeliveryCompany.BusinessLayer.SpaceTimeProviders
 {
     public interface ITimeProvider
     {
-        DateTime Now { get; }
+        public DateTime Now { get; }
     }
 }

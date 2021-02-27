@@ -3,15 +3,14 @@ using DeliveryCompany.DataLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DeliveryCompany.BusinessLayer
 {
     public interface IVehicleService
     {
-        Task AddAsync(Vehicle vehicle);
-        List<Vehicle> GetAllVehicles();
-        Vehicle GetVehicle(int courierId);
+        public void Add(Vehicle vehicle);
+        public List<Vehicle> GetAllVehicles();
+        public Vehicle GetVehicle(int courierId);
     }
 
     public class VehicleService : IVehicleService
@@ -23,12 +22,12 @@ namespace DeliveryCompany.BusinessLayer
             _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
         }
 
-        public async Task AddAsync(Vehicle vehicle)
+        public void Add(Vehicle vehicle)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Vehicles.Add(vehicle);
-                await context.SaveChangesAsync();
+                context.SaveChanges();
             }
         }
 

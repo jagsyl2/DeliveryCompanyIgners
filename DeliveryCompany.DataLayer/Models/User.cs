@@ -19,6 +19,5 @@
         public double lat { get; set; }
         public double lon { get; set; }
         public TypeOfUser Type { get; set; }
-        public string Password { get; set; }
     }
 }

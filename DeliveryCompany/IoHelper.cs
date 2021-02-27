@@ -14,7 +14,6 @@ namespace DeliveryCompany
         void PrintUser(User user);
         void PrintUsers(List<User> users, string message);
         void WriteString(string message);
-        string GetPasswordFromUser(string message);
     }
 
     public class IoHelper : IIoHelper
@@ -58,29 +57,6 @@ namespace DeliveryCompany
             while (validation == false);
 
             return eMail;
-        }
-
-        public string GetPasswordFromUser(string message)
-        {
-            string password;
-            bool validation;
-
-            do
-            {
-                password = GetStringFromUser(message);
-                validation = true;
-
-                if (!string.IsNullOrWhiteSpace(password))
-                {
-                    WriteString("Incorrect password (must contain at least 1 character). Try again...");
-
-                    validation = false;
-                    continue;
-                }
-            }
-            while (validation == false);
-
-            return password;
         }
 
         public void WriteString(string message)

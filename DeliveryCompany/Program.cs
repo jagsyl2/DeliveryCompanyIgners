@@ -54,8 +54,8 @@ namespace DeliveryCompany
         void Run()
         {
             _databaseManagmentService.EnsureDatabaseCreation();
-            _userService.UpdatingCoordinatesOfExistingUsersInDatabase();
-            _userService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingUsersInDatabase();
+            _databaseManagmentService.UpdatingCoordinatesOfExistingRecipientsInDatabase();
 
             _timerService.Start();
 
@@ -93,7 +93,7 @@ namespace DeliveryCompany
             var driverId = _ioHelperAddVehicle.SelectDriverId(drivers);
             var vehicle = _ioHelperAddVehicle.CreateNewVehicle(driverId);
             
-            _vehicleService.AddAsync(vehicle).Wait();
+            _vehicleService.Add(vehicle);
         }
 
         private void AddPackage()
@@ -108,19 +108,8 @@ namespace DeliveryCompany
 
             var customerId = _ioHelperAddPackage.SelectCustomerId(customers);
             var package = _ioHelperAddPackage.CreateNewPackage(customerId);
-
-            try
-            {
-                _packageService.AddAsync(package).Wait();
-
-                Console.WriteLine("The new package has been added!");
-                Console.WriteLine();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("The given address does not exist. Try again...");
-                return;
-            }
+            
+            _packageService.Add(package);
         }
 
         private void AddUser()
@@ -131,18 +120,10 @@ namespace DeliveryCompany
                 return;
             }
 
-            try
-            {
-                _userService.AddAsync(user).Wait();
+            _userService.Add(user);
 
-                Console.WriteLine($"A new {user.Type} has been added.");
-                Console.WriteLine();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("The given address does not exist. Try again...");
-                return;
-            }
+            Console.WriteLine($"A new {user.Type} has been added.");
+            Console.WriteLine();
         }
     }
 }

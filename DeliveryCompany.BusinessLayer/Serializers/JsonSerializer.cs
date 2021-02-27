@@ -7,8 +7,8 @@ namespace DeliveryCompany.BusinessLayer.Serializers
 {
     public interface IJsonSerializer
     {
-        void Serialize(string filePath, List<Package> dataSet);
-        List<JsonLocationData> DeserializeLocation(string locationData);
+        public void Serialize(string filePath, List<Package> dataSet);
+        public List<JsonLocationData> DeserializeLocation(string locationData);
     }
 
     public class JsonSerializer : IJsonSerializer

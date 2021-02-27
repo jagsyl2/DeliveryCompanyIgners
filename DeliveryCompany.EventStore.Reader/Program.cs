@@ -1,4 +1,4 @@
-﻿using DeliveryCompany.EventStore.Reader.Models;
+﻿using DeliveryCompany.DataLayer.Models;
 using EventStore.Client;
 using Newtonsoft.Json;
 using System;

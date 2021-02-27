@@ -94,9 +94,6 @@ namespace DeliveryCompany.DataLayer.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PostCode")
                         .HasColumnType("nvarchar(max)");
 

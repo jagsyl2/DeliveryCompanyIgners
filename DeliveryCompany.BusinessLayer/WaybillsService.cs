@@ -12,7 +12,7 @@ namespace DeliveryCompany.BusinessLayer
 {
     public interface IWaybillsService
     {
-        void CreateWaybills();
+        public void CreateWaybills();
     }
 
     public class WaybillsService : IWaybillsService

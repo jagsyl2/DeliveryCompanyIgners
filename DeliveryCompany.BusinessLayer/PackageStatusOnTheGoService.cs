@@ -5,8 +5,8 @@ namespace DeliveryCompany.BusinessLayer
 {
     public interface IPackageStatusOnTheGoService
     {
-        void ChangingPackageStatusAtTheBeginningOfJourney();
-        void ChangingPackageStatusAtTheEndOfJourney();
+        public void ChangingPackageStatusAtTheBeginningOfJourney();
+        public void ChangingPackageStatusAtTheEndOfJourney();
     }
 
     public class PackageStatusOnTheGoService : IPackageStatusOnTheGoService
