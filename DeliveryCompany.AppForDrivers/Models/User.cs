@@ -1,4 +1,4 @@
-﻿namespace DeliveryCompany.DataLayer.Models
+﻿namespace DeliveryCompany.AppForDrivers.Models
 {
     public enum TypeOfUser
     {

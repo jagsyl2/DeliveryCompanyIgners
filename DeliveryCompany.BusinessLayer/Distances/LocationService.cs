@@ -8,11 +8,11 @@ namespace DeliveryCompany.BusinessLayer.Distances
 {
     public interface ILocationService
     {
-        public LocationCoordinates ChangeLocationToCoordinates(User user);
-        public LocationCoordinates ChangeLocationToCoordinates(string city, string postCode, string street, string streetNumber);
-        public Dictionary<int, double> CountDistancesFromPackageToCouriers(List<User> couriers, Package package);
-        public string GetCoordinatesForAddress(string country, string city, string postcode, string street, string building);
-        public double GetDistanceBetweenTwoPlaces(LocationCoordinates originLocation, LocationCoordinates destinationLocation);
+        LocationCoordinates ChangeLocationToCoordinates(User user);
+        LocationCoordinates ChangeLocationToCoordinates(string city, string postCode, string street, string streetNumber);
+        Dictionary<int, double> CountDistancesFromPackageToCouriers(List<User> couriers, Package package);
+        string GetCoordinatesForAddress(string country, string city, string postcode, string street, string building);
+        double GetDistanceBetweenTwoPlaces(LocationCoordinates originLocation, LocationCoordinates destinationLocation);
     }
 
     public class LocationService : ILocationService

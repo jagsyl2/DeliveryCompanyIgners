@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DeliveryCompany.DataLayer.Models
+namespace DeliveryCompany.EventStore.Reader.Models
 {
     public class Package
     {
