@@ -25,12 +25,12 @@ namespace DeliveryCompany.BusinessLayer
         public void ChangingPackageStatusAtTheBeginningOfJourney()
         {
             var todaysPackages = _packageService.GetPackagesWithStatus(StateOfPackage.Given);
-            _packageService.UpdatePackages(todaysPackages, StateOfPackage.OnTheWay);
+            _packageService.UpdatePackagesOnAutomaticWaybill(todaysPackages, StateOfPackage.OnTheWay);
         }
 
         public void ChangingPackageStatusAtTheEndOfJourney()
         {
-            var todaysPackages = _packageService.GetPackagesWithStatus(StateOfPackage.OnTheWay);
+            var todaysPackages = _packageService.GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage.OnTheWay);
             _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received);
 
             foreach (var package in todaysPackages)

@@ -146,7 +146,7 @@ namespace DeliveryCompany.BusinessLayer
                     package.RecipientLat = packageCoordinate.Lat;
                     package.RecipientLon = packageCoordinate.Lon;
 
-                    _packageService.Update(package);
+                    _packageService.UpdateAsync(package);
                 }
                 catch (Exception)
                 {

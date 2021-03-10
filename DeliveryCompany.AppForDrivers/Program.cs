@@ -84,10 +84,32 @@ namespace DeliveryCompany.AppForDrivers
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
+
+                    UpdateWaybillMode(responseObject);
+
                     foreach (var package in responseObject)
                     {
                         _ioHelper.PrintPackages(package);
                     }
+                }
+                else
+                {
+                    Console.WriteLine($"Failed again. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private void UpdateWaybillMode(List<Package> packages)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.PutAsync($@"http://localhost:10500/api/packages/waybill/{packages}").Result;
+                //var responseText = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    //var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
+
                 }
                 else
                 {

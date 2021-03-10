@@ -18,6 +18,12 @@ namespace DeliveryCompany.AppForDrivers.Models
         Received
     }
 
+    public enum ModeOfWaybill
+    {
+        Automatic = 1,
+        Manual = 2,
+    }
+
     public class Package
     {
         public int Id { get; set; }
@@ -27,6 +33,7 @@ namespace DeliveryCompany.AppForDrivers.Models
         public PackageSize Size { get; set; }
         public DateTime DateOfRegistration { get; set; }
         public StateOfPackage State { get; set; }
+        public ModeOfWaybill ModeWaybill { get; set; }
         public int VehicleNumber { get; set; }
         public string RecipientName { get; set; }
         public string RecipientSurname { get; set; }

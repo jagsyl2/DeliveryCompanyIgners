@@ -13,9 +13,12 @@ namespace DeliveryCompany.BusinessLayer
     public interface IPackageService
     {
         Task AddAsync(Package package);
-        void Update(Package package);
+        Task UpdateAsync(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage);
+        Task UpdatePackagesOnManualWaybill(List<Package> packages);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
+        List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage);
         Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id);
         List<Package> GetAllPackagesWithoutCoordinates();
     }
@@ -65,12 +68,12 @@ namespace DeliveryCompany.BusinessLayer
             return package;
         }
 
-        public void Update(Package package)
+        public async Task UpdateAsync(Package package)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Packages.Update(package);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -79,7 +82,26 @@ namespace DeliveryCompany.BusinessLayer
             foreach (var package in packages)
             {
                 package.State = stateOfPackage;
-                Update(package);
+                UpdateAsync(package).Wait();
+            }
+        }
+
+        public void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage)
+        {
+            foreach (var package in packages)
+            {
+                package.State = stateOfPackage;
+                package.ModeWaybill = ModeOfWaybill.Automatic;
+                UpdateAsync(package).Wait();
+            }
+        }
+
+        public async Task UpdatePackagesOnManualWaybill(List<Package> packages)
+        {
+            foreach (var package in packages)
+            {
+                package.ModeWaybill = ModeOfWaybill.Manual;
+                await UpdateAsync(package);
             }
         }
 
@@ -90,6 +112,17 @@ namespace DeliveryCompany.BusinessLayer
                 return context.Packages
                     .Include(x => x.Sender)
                     .Where(x => (x.State == stateOfPackage && (x.RecipientLat != 999 || x.RecipientLon != 999)))
+                    .ToList();
+            }
+        }
+
+        public List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Packages
+                    .Include(x => x.Sender)
+                    .Where(x => (x.State == stateOfPackage && x.ModeWaybill==ModeOfWaybill.Automatic && (x.RecipientLat != 999 || x.RecipientLon != 999)))
                     .ToList();
             }
         }
