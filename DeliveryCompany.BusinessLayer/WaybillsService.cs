@@ -108,7 +108,7 @@ namespace DeliveryCompany.BusinessLayer
                 {
                     courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
 
-                    vehicle = _vehicleService.GetVehicle(courierId);                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
+                    vehicle = _vehicleService.GetVehicleAsync(courierId).Result;                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
                     if (vehicle == null)                                                                        //zabezpieczam się też na wypadek gdyby kurier był na tyle nowy, że jeszcze nie dano mu samochodu
                     {
                         distances.Remove(courierId);
@@ -146,7 +146,7 @@ namespace DeliveryCompany.BusinessLayer
                         continue;
                     }
 
-                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0]; // !!odleglosc 1 paczki do kuriera
 
                     UpdateCourierLocationsAlongTheWayForFirstPackage(courierLocationAlongTheWay, courierId, firstPackageSender, firstPackageRecipient);
                 }

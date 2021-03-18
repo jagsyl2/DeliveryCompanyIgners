@@ -116,9 +116,9 @@ namespace DeliveryCompany.Tests
                 .Setup(x => x.GetAllVehicles())
                 .Returns(vehicles);
 
-            vehicleServiceMock
-                .Setup(x => x.GetVehicle(5))
-                .Returns(new Vehicle());
+            //vehicleServiceMock
+            //    .Setup(x => x.GetVehicleAsync(5))
+            //    .Returns(new Vehicle());
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
@@ -186,9 +186,9 @@ namespace DeliveryCompany.Tests
                 .Setup(x => x.GetAllVehicles())
                 .Returns(vehicles);
 
-            vehicleServiceMock
-                .Setup(x => x.GetVehicle(5))
-                .Returns(new Vehicle() { Id = 5 });
+            //vehicleServiceMock
+            //    .Setup(x => x.GetVehicleAsync(5))
+            //    .Returns(new Vehicle() { Id = 5 });
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
@@ -278,9 +278,9 @@ namespace DeliveryCompany.Tests
                 .Returns(users);
 
             var vehicleServiceMock = new Mock<IVehicleService>();
-            vehicleServiceMock
-                .Setup(x => x.GetVehicle(5))
-                .Returns(new Vehicle() { Id = 5 });
+            //vehicleServiceMock
+                //.Setup(x => x.GetVehicleAsync(5))
+                //.Returns(new Vehicle() { Id = 5 });
 
             vehicleServiceMock
                 .Setup(x => x.GetAllVehicles())

@@ -11,7 +11,7 @@ namespace DeliveryCompany.BusinessLayer
     {
         Task AddAsync(Vehicle vehicle);
         List<Vehicle> GetAllVehicles();
-        Vehicle GetVehicle(int courierId);
+        Task<Vehicle> GetVehicleAsync(int courierId);
     }
 
     public class VehicleService : IVehicleService
@@ -40,13 +40,17 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public Vehicle GetVehicle(int courierId)
+        public async Task<Vehicle> GetVehicleAsync(int courierId)
         {
-            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            Vehicle vehicle;
+
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                return context.Vehicles
-                    .FirstOrDefault(x => x.DriverId == courierId); 
+                vehicle = await context.Vehicles
+                    .FirstOrDefaultAsync(x => x.DriverId == courierId);
             }
+            
+            return vehicle;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace DeliveryCompany.BusinessLayer
         Task UpdateAsync(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
         void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage);
-        Task UpdatePackagesOnManualWaybill(List<Package> packages);
+        //Task UpdatePackagesOnManualWaybill(Package package);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage);
         Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id);
@@ -96,14 +96,11 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public async Task UpdatePackagesOnManualWaybill(List<Package> packages)
-        {
-            foreach (var package in packages)
-            {
-                package.ModeWaybill = ModeOfWaybill.Manual;
-                await UpdateAsync(package);
-            }
-        }
+        //public async Task UpdatePackagesOnManualWaybill(Package package)
+        //{
+        //        package.ModeWaybill = ModeOfWaybill.Manual;
+        //        await UpdateAsync(package);
+        //}
 
         public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage)
         {
@@ -132,18 +129,16 @@ namespace DeliveryCompany.BusinessLayer
             List<Package> waybill;
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                var vehicle = context.Vehicles.FirstOrDefault(x => x.DriverId == id);
-
                 waybill = await context.Packages
                     .Include(x => x.Sender)
-                    .Where(x => ((x.State == StateOfPackage.Given || x.State == StateOfPackage.OnTheWay) && x.VehicleNumber==vehicle.Id))
+                    .Where(x => (x.VehicleNumber==id && (x.State == StateOfPackage.Given || x.State == StateOfPackage.OnTheWay)))
                     .ToListAsync();
             }
 
-            foreach (var package in waybill)
-            {
-                package.Sender.Password = "Unavailable";
-            }
+            //foreach (var package in waybill)
+            //{
+            //    package.Sender.Password = "Unavailable";
+            //}
 
             return waybill;
         }

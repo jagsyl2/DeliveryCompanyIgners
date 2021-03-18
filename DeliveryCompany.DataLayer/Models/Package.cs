@@ -11,11 +11,11 @@ namespace DeliveryCompany.DataLayer.Models
 
     public enum StateOfPackage
     {
-        AwaitingPosting,
-        Given,
-        OnTheWay,
-        AwaitingPickup,
-        Received
+        AwaitingPosting = 0,
+        Given = 1,
+        OnTheWay = 2,
+        DeliveredManually = 3,
+        Received = 4
     }
 
     public enum ModeOfWaybill
@@ -34,6 +34,7 @@ namespace DeliveryCompany.DataLayer.Models
         public DateTime DateOfRegistration { get; set; }
         public StateOfPackage State { get; set; }
         public ModeOfWaybill ModeWaybill { get; set; }
+        public DateTime DeliveryDate { get; set; }
         public int VehicleNumber { get; set; }
         public string RecipientName { get; set; }
         public string RecipientSurname { get; set; }
