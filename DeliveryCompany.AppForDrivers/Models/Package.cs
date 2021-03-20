@@ -36,6 +36,7 @@ namespace DeliveryCompany.AppForDrivers.Models
         public ModeOfWaybill ModeWaybill { get; set; }
         public string NumberOfWaybill { get; set; }
         public DateTime DeliveryDate { get; set; }
+        public int CourierRating { get; set; }
         public int VehicleNumber { get; set; }
         public string RecipientName { get; set; }
         public string RecipientSurname { get; set; }

@@ -15,12 +15,14 @@ namespace DeliveryCompany.BusinessLayer
         Task AddAsync(Package package);
         Task UpdateAsync(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage, int couriersRating);
         Task UpdateByIdAsync(int id, Package package);
         void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage);
         //Task UpdatePackagesOnManualWaybill(Package package);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage);
         Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id);
+        public List<Package> GetPackagesTodaysDelivered(string waybill);
         List<Package> GetAllPackagesWithoutCoordinates();
     }
 
@@ -98,6 +100,16 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
+        public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage, int couriersRating)
+        {
+            foreach (var package in packages)
+            {
+                package.CourierRating = couriersRating;
+                package.State = stateOfPackage;
+                UpdateAsync(package).Wait();
+            }
+        }
+
         public void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage)
         {
             foreach (var package in packages)
@@ -153,6 +165,19 @@ namespace DeliveryCompany.BusinessLayer
             //}
 
             return waybill;
+        }
+
+        public List<Package> GetPackagesTodaysDelivered(string waybill)
+        {
+            List<Package> packages;
+            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                packages = context.Packages
+                    .AsQueryable()
+                    .Where(x=>x.NameOfWaybill == waybill)
+                    .ToList();
+            }
+            return packages;
         }
 
         public List<Package> GetAllPackagesWithoutCoordinates()

@@ -31,7 +31,7 @@ namespace DeliveryCompany.BusinessLayer
         public void ChangingPackageStatusAtTheEndOfJourney()
         {
             var todaysPackages = _packageService.GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage.OnTheWay);
-            _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received);
+            _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received, 5);
 
             foreach (var package in todaysPackages)
             {

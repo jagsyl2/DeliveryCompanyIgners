@@ -170,7 +170,7 @@ namespace DeliveryCompany.BusinessLayer
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
                 package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
-                package.NumberOfWaybill = $"{vehicle.DriverId}_{_fastForwardTimeProvider.Now.ToString("yyyy-MM-dd")}";
+                package.NameOfWaybill = $"{vehicle.DriverId}_{_fastForwardTimeProvider.Now.ToString("yyyy-MM-dd")}";
 
                 todaysPackages.Add(package);                                                                    //tworzę listę paczek, które dzisiaj będą podróżowały
             }

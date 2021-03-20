@@ -15,9 +15,10 @@ namespace DeliveryCompany.AppForDrivers
 
         public void PrintPackageAlongTheRoute(WaybillItem item)
         {
-            Console.WriteLine($"Package Id: {item.Package.Id} - Number: {item.Package.Number}:");
+            Console.WriteLine($"Package Id: {item.Package.Id} - Number: {item.Package.Number}: - Package {item.TypeOfPackage}");
             Console.WriteLine($"\tDistance from the previous point: {item.Distance}[km]");
             Console.WriteLine($"\tEstimated travel time from previous point: {item.Time}[min]");
+            Console.WriteLine($"\tDateTime: {item.EstimatedDeliveryTime}");
             Console.WriteLine();
         }
 
