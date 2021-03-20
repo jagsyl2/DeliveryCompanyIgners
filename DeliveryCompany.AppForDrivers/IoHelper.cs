@@ -1,5 +1,6 @@
 ﻿using DeliveryCompany.AppForDrivers.Models;
 using System;
+using System.Collections.Generic;
 
 namespace DeliveryCompany.AppForDrivers
 {
@@ -38,6 +39,17 @@ namespace DeliveryCompany.AppForDrivers
             }
 
             return userChoice;
+        }
+
+        public void Print(int courierId, List<Rating> ratings)
+        {
+            Console.WriteLine($"Ratings for the courier {courierId}");
+
+            foreach (var rating in ratings)
+            {
+                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime} - rating: {rating.CouriersRating}");
+            }
+            Console.WriteLine();
         }
     }
 }

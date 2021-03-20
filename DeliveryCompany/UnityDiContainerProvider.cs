@@ -29,6 +29,7 @@ namespace DeliveryCompany
             container.RegisterType<ILocationService, LocationService>();
             container.RegisterType<IJsonSerializer, JsonSerializer>();
             container.RegisterType<IPackageStatusOnTheGoService, PackageStatusOnTheGoService>();
+            container.RegisterType<ICourierRatingsService, CourierRatingsService>();
 
             container.RegisterSingleton<ITimeProvider, FastForwardTimeProvider>();
             container.RegisterSingleton<ITimerSheduler, TimerSheduler>();

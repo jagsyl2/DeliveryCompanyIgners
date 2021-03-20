@@ -7,7 +7,13 @@ using System.Linq;
 
 namespace DeliveryCompany.BusinessLayer
 {
-    public class CourierRatingsService
+    public interface ICourierRatingsService
+    { 
+        void CountAverageRatingForWaybill();
+        List<Rating> GetListOfRatings(int courierId);
+    }
+
+    public class CourierRatingsService : ICourierRatingsService
     {
         private readonly IVehicleService _vehicleService;
         private readonly ITimeProvider _fastForwardTimeProvider;
@@ -38,7 +44,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 var waybill = $"{vehicle.DriverId}_{date}";
                 var packages = _packageService.GetPackagesTodaysDelivered(waybill);
-                var rating = packages.Sum(x=> x.CourierRating)/packages.Count;
+                var rating = packages.Sum(x => x.CourierRating) / packages.Count;
 
                 var ratingForWaybill = new Rating()
                 {
@@ -73,20 +79,9 @@ namespace DeliveryCompany.BusinessLayer
                 return context.Ratings
                     .AsQueryable()
                     .Where(x => x.UserId == courierId)
-                    .OrderBy(x=>x.DateTime)
+                    .OrderBy(x => x.DateTime)
                     .ToList();
             }
-        }
-
-        public void Print(int courierId, List<Rating> ratings)
-        {
-            Console.WriteLine($"Ratings for the courier {courierId}");
-
-            foreach (var rating in ratings)
-            {
-                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime} - rating: {rating.CouriersRating}");
-            }
-            Console.WriteLine();
         }
     }
 }

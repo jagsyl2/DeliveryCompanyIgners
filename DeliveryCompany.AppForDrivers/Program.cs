@@ -73,7 +73,8 @@ namespace DeliveryCompany.AppForDrivers
                 Console.WriteLine("1. Get waybill");
                 Console.WriteLine("2. Checking the route");
                 Console.WriteLine("3. Manual development of packages");
-                Console.WriteLine("4. Log out");
+                Console.WriteLine("4. Rating display");
+                Console.WriteLine("5. Log out");
 
                 var option = _ioHelper.GetIntFromUser("Enter option no:");
 
@@ -89,7 +90,10 @@ namespace DeliveryCompany.AppForDrivers
                         ManualDevelopmentOfPackages();
                         break;
                     case 4:
-                        _exit = true;
+                        RatingDisplay();
+                        break;
+                    case 5:
+                        LogOut();
                         break;
                     default:
                         Console.WriteLine("Unknown option");
@@ -97,6 +101,34 @@ namespace DeliveryCompany.AppForDrivers
                 }
             } 
             while (!_exit);
+        }
+
+        private void LogOut()
+        {
+            _exit = true;
+            _user = null;
+            _waybill = null;
+            _vehicle = null;
+            _startTimeOfWork = DateTime.MinValue;
+        }
+
+        private void RatingDisplay()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.GetAsync($@"http://localhost:10500/api/waybills/rating/{_user.Id}").Result;
+                var responseText = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var ratingList = JsonConvert.DeserializeObject<List<Rating>>(responseText);
+                    _ioHelper.Print(_user.Id, ratingList);
+                }
+                else
+                {
+                    Console.WriteLine($"Failed. Status code: {response.StatusCode}");
+                }
+            }
         }
 
         private void ManualDevelopmentOfPackages()

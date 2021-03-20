@@ -16,16 +16,19 @@ namespace DeliveryCompany.BusinessLayer
         private IPackageStatusOnTheGoService _packageStatus;
         private ITimeProvider _fastForwardTimeProvider;
         private IWaybillsService _waybillsService;
+        private ICourierRatingsService _courierRatingsService;
         private readonly Timer _aTimer;
 
         public TimerSheduler(
-            IPackageStatusOnTheGoService packageService,
+            IPackageStatusOnTheGoService packageStatusService,
             ITimeProvider fastForwardTimeProvider,
-            IWaybillsService waybillsService)
+            IWaybillsService waybillsService,
+            ICourierRatingsService courierRatingsService)
         {
-            _packageStatus = packageService;
+            _packageStatus = packageStatusService;
             _fastForwardTimeProvider = fastForwardTimeProvider;
             _waybillsService = waybillsService;
+            _courierRatingsService = courierRatingsService;
 
             _aTimer = new Timer
             {
@@ -62,6 +65,11 @@ namespace DeliveryCompany.BusinessLayer
             if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 0, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheEndOfJourney();
+            }
+
+            if (now.TimeOfDay >= new TimeSpan(0, 18, 1, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 1, 59, 999))
+            {
+                _courierRatingsService.CountAverageRatingForWaybill();
             }
         }
 
