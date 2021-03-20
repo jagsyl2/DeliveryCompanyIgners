@@ -146,7 +146,7 @@ namespace DeliveryCompany.BusinessLayer
                         continue;
                     }
 
-                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0]; // !!odleglosc 1 paczki do kuriera
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0]; 
 
                     UpdateCourierLocationsAlongTheWayForFirstPackage(courierLocationAlongTheWay, courierId, firstPackageSender, firstPackageRecipient);
                 }
@@ -170,6 +170,7 @@ namespace DeliveryCompany.BusinessLayer
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
                 package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
+                package.NumberOfWaybill = $"{vehicle.DriverId}_{_fastForwardTimeProvider.Now.ToString("yyyy-MM-dd")}";
 
                 todaysPackages.Add(package);                                                                    //tworzę listę paczek, które dzisiaj będą podróżowały
             }

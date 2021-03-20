@@ -15,6 +15,7 @@ namespace DeliveryCompany.BusinessLayer
         Task AddAsync(Package package);
         Task UpdateAsync(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
+        Task UpdateByIdAsync(int id, Package package);
         void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage);
         //Task UpdatePackagesOnManualWaybill(Package package);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
@@ -70,6 +71,17 @@ namespace DeliveryCompany.BusinessLayer
 
         public async Task UpdateAsync(Package package)
         {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                context.Packages.Update(package);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateByIdAsync(int id, Package package)
+        {
+            package.Id = id;
+
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 context.Packages.Update(package);

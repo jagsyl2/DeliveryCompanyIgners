@@ -8,6 +8,7 @@ using System.Text;
 using DeliveryCompany.AppForDrivers.Distances;
 using DeliveryCompany.DataLayer.Models;
 using System.Linq;
+using DeliveryCompany.AppForDrivers.SpaceTimeProviders;
 
 namespace DeliveryCompany.AppForDrivers
 {
@@ -15,13 +16,14 @@ namespace DeliveryCompany.AppForDrivers
     {
         private readonly IoHelper _ioHelper = new IoHelper();
         private readonly LocationService _locationService = new LocationService();
+        private readonly FastForwardTimeProvider _fastForwardTimeProvider = new FastForwardTimeProvider();
 
         private bool _exit = false;
         private User _user = null;
         private List<Package> _waybill = null;
         private Vehicle _vehicle = null;
         private const double minutes = 60.0d;
-        private List<WaybillItem> waybillItems =null;
+        private List<WaybillItem> waybillItems =new List<WaybillItem>();
 
         static void Main(string[] args)
         {
@@ -103,9 +105,11 @@ namespace DeliveryCompany.AppForDrivers
                 return;
             }
 
-            var userChoice = _ioHelper.GetIntFromUser("Choose option:");
+            Console.WriteLine("Avaiable options:");
             Console.WriteLine("1. Mark the delivered package.");
             Console.WriteLine("2. Back to options.");
+            var userChoice = _ioHelper.GetIntFromUser("Choose option:");
+
 
             switch (userChoice)
             {
@@ -122,17 +126,47 @@ namespace DeliveryCompany.AppForDrivers
 
         private void MarkDeliveredPackage()
         {
-            var deliveredPackage = _ioHelper.GetIntFromUser("Provide the number of the delivered package:");
-            if (!_waybill.Any(x => x.Id == deliveredPackage))
+            var deliveredPackageId = _ioHelper.GetIntFromUser("Provide the number of the delivered package:");
+            if (!_waybill.Any(x => x.Id == deliveredPackageId))
             {
                 Console.WriteLine("There is no such package.");
                 return;
             }
+            if (_waybill.Any(x => x.Id == deliveredPackageId && x.State==StateOfPackage.DeliveredManually))
+            {
+                Console.WriteLine("Package has already been delivered.");
+            }
             else
             {
-                
+                UpdatePackageStatus(deliveredPackageId);
+                return;
             }
 
+        }
+
+        private void UpdatePackageStatus(int deliveredPackageId)
+        {
+            var package = _waybill.FirstOrDefault(x => x.Id == deliveredPackageId);
+
+            package.State = StateOfPackage.DeliveredManually;
+            package.DeliveryDate = _fastForwardTimeProvider.Now;
+
+            var content = new StringContent(JsonConvert.SerializeObject(package), Encoding.UTF8, "application/json");
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.PutAsync($@"http://localhost:10500/api/packages/status/{deliveredPackageId}", content).Result;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.WriteLine($"Success.");
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine($"Failed again. Status code: {response.StatusCode}");
+                    return;
+                }
+            }
         }
 
         private void CheckingTheRoute()

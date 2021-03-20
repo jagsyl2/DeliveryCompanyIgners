@@ -53,6 +53,12 @@ namespace DeliveryCompany.WebApiTopShelf.Controllers
         {
             return await _packageService.GetPackagesOnCouriersWaybillAsync(id);
         }
+        
+        [HttpPut("status/{id}")]
+        public async Task PutPackageStatusAsync(int id, [FromBody]Package package)
+        {
+            await _packageService.UpdateByIdAsync(id, package);
+        }
 
         [HttpPut("waybill")]
         public async Task PutPackagesOnWaybillAsync([FromBody]Package package)

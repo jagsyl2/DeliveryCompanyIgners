@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeliveryCompany.DataLayer.Migrations
 {
     [DbContext(typeof(DeliveryCompanyDbContext))]
-    [Migration("20210318163238_AssignNumbersToEnumStateOfPackage")]
+    [Migration("20210318201650_AssignNumbersToEnumStateOfPackage")]
     partial class AssignNumbersToEnumStateOfPackage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,9 @@ namespace DeliveryCompany.DataLayer.Migrations
                         .UseIdentityColumn();
 
                     b.Property<DateTime>("DateOfRegistration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ModeWaybill")

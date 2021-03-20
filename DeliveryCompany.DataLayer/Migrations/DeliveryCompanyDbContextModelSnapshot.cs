@@ -29,6 +29,9 @@ namespace DeliveryCompany.DataLayer.Migrations
                     b.Property<DateTime>("DateOfRegistration")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ModeWaybill")
                         .HasColumnType("int");
 
