@@ -7,6 +7,7 @@ namespace DeliveryCompany.BusinessLayer
     {
         void ChangingPackageStatusAtTheBeginningOfJourney();
         void ChangingPackageStatusAtTheEndOfJourney();
+        void ChangingPackageStatusFromManualWaybillAtTheEndOfWork();
     }
 
     public class PackageStatusOnTheGoService : IPackageStatusOnTheGoService
@@ -32,6 +33,17 @@ namespace DeliveryCompany.BusinessLayer
         {
             var todaysPackages = _packageService.GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage.OnTheWay);
             _packageService.UpdatePackages(todaysPackages, StateOfPackage.Received, 5);
+
+            foreach (var package in todaysPackages)
+            {
+                _notificationService.NotifyOfPackageDelivery(package);
+            }
+        }
+
+        public void ChangingPackageStatusFromManualWaybillAtTheEndOfWork()
+        {
+            var todaysPackages = _packageService.GetPackagesWithStatusOnManualWaybill(StateOfPackage.OnTheWay);
+            _packageService.UpdatePackages(todaysPackages, StateOfPackage.DeliveredManually, 1);
 
             foreach (var package in todaysPackages)
             {

@@ -42,7 +42,7 @@ namespace DeliveryCompany.DataLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CouriersRating = table.Column<int>(type: "int", nullable: false)
+                    CouriersRating = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {

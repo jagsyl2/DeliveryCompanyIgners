@@ -47,7 +47,7 @@ namespace DeliveryCompany.AppForDrivers
 
             foreach (var rating in ratings)
             {
-                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime} - rating: {rating.CouriersRating}");
+                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime.ToString("yyyy.MM.dd")} - rating: {rating.CouriersRating}");
             }
             Console.WriteLine();
         }

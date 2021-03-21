@@ -97,8 +97,8 @@ namespace DeliveryCompany.DataLayer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("CouriersRating")
-                        .HasColumnType("int");
+                    b.Property<double>("CouriersRating")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");

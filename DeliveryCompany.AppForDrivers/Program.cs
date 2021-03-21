@@ -22,7 +22,7 @@ namespace DeliveryCompany.AppForDrivers
         private User _user = null;
         private List<Package> _waybill = null;
         private Vehicle _vehicle = null;
-        private DateTime _startTimeOfWork = DateTime.MinValue;
+        private DateTime _startTimeOfWork;
         private const double _minutes = 60.0d;
         private List<WaybillItem> _waybillItems =new List<WaybillItem>();
 
@@ -54,7 +54,7 @@ namespace DeliveryCompany.AppForDrivers
                     var responseObject = JsonConvert.DeserializeObject<User>(responseText);
                     _user = responseObject;
                     _vehicle = GetVehicle();
-                    _startTimeOfWork = _fastForwardTimeProvider.Now;
+                    _startTimeOfWork = GetStartTime();
                     Menu();
                 }
                 else
@@ -62,6 +62,18 @@ namespace DeliveryCompany.AppForDrivers
                     Console.WriteLine($"Failed. Status code: {response.StatusCode}");
                     return;
                 }
+            }
+        }
+
+        private DateTime GetStartTime()
+        {
+            if (0 < _fastForwardTimeProvider.Now.Hour && _fastForwardTimeProvider.Now.Hour< 8)
+            {
+                return _fastForwardTimeProvider.Now;
+            }
+            else
+            {
+                return _fastForwardTimeProvider.Now.Date.AddHours(8);
             }
         }
 
@@ -74,7 +86,7 @@ namespace DeliveryCompany.AppForDrivers
                 Console.WriteLine("2. Checking the route");
                 Console.WriteLine("3. Manual development of packages");
                 Console.WriteLine("4. Rating display");
-                Console.WriteLine("5. Log out");
+                Console.WriteLine("5. Exit");
 
                 var option = _ioHelper.GetIntFromUser("Enter option no:");
 
@@ -93,7 +105,7 @@ namespace DeliveryCompany.AppForDrivers
                         RatingDisplay();
                         break;
                     case 5:
-                        LogOut();
+                        _exit = LogOut();
                         break;
                     default:
                         Console.WriteLine("Unknown option");
@@ -103,13 +115,14 @@ namespace DeliveryCompany.AppForDrivers
             while (!_exit);
         }
 
-        private void LogOut()
+        private bool LogOut()
         {
-            _exit = true;
             _user = null;
             _waybill = null;
             _vehicle = null;
-            _startTimeOfWork = DateTime.MinValue;
+            _startTimeOfWork = DateTime.Today.AddHours(8);
+
+            return true;
         }
 
         private void RatingDisplay()
@@ -122,6 +135,11 @@ namespace DeliveryCompany.AppForDrivers
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var ratingList = JsonConvert.DeserializeObject<List<Rating>>(responseText);
+                    if (ratingList.Count==0)
+                    {
+                        Console.WriteLine("No rated waybills!");
+                        return;
+                    }
                     _ioHelper.Print(_user.Id, ratingList);
                 }
                 else
@@ -130,6 +148,13 @@ namespace DeliveryCompany.AppForDrivers
                 }
             }
         }
+
+
+
+
+
+
+
 
         private void ManualDevelopmentOfPackages()
         {
@@ -170,12 +195,47 @@ namespace DeliveryCompany.AppForDrivers
             {
                 Console.WriteLine("Package has already been delivered.");
             }
+            if (_waybill.Any(x => x.Id == deliveredPackageId && x.ModeWaybill == ModeOfWaybill.Automatic))
+            {
+                var package = GetPackage(deliveredPackageId);
+                if (package == null)
+                {
+                    Console.WriteLine("There is no such package.");
+                    return;
+                }
+                if (package.State == StateOfPackage.Received)
+                {
+                    Console.WriteLine("Package has already been delivered.");
+                    return;
+                }
+
+            }
             else
             {
                 UpdatePackageStatus(deliveredPackageId);
                 return;
             }
 
+        }
+
+        private Package GetPackage(int deliveredPackageId)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.GetAsync($@"http://localhost:10500/api/packages/{deliveredPackageId}").Result;
+                var responseText = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var responseObject = JsonConvert.DeserializeObject<Package>(responseText);
+                    return responseObject;
+                }
+                else
+                {
+                    Console.WriteLine("Something went wrong");
+                    return null;
+                }
+            }
         }
 
         private void UpdatePackageStatus(int deliveredPackageId)
@@ -213,19 +273,19 @@ namespace DeliveryCompany.AppForDrivers
         {
             var deviation = (package.DeliveryDate - estimatedDeliveryTime).TotalMinutes;
 
-            if (Math.Abs(deviation) < 10)
+            if (-10 < deviation && deviation < 10)
             {
                 return 5;
             }
-            if (Math.Abs(deviation) < 20)
+            if (-20 < deviation && deviation < 20)
             {
                 return 4;
             }
-            if (Math.Abs(deviation) < 30)
+            if (-30 < deviation && deviation < 30)
             {
                 return 3;
             }
-            if (Math.Abs(deviation) < 40)
+            if (-40 < deviation && deviation < 40)
             {
                 return 2;
             }
@@ -325,6 +385,12 @@ namespace DeliveryCompany.AppForDrivers
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var responseObject = JsonConvert.DeserializeObject<List<Package>>(responseText);
+                    if (responseObject.Count==0)
+                    {
+                        Console.WriteLine("There are no packages to develop today.");
+                        return;
+                    }
+                    
                     _waybill = responseObject;
 
                     foreach (var package in responseObject)

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeliveryCompany.DataLayer.Migrations
 {
     [DbContext(typeof(DeliveryCompanyDbContext))]
-    [Migration("20210320231659_AddedColumnsToTablePackagesAndNewTable")]
+    [Migration("20210321105342_AddedColumnsToTablePackagesAndNewTable")]
     partial class AddedColumnsToTablePackagesAndNewTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,8 +99,8 @@ namespace DeliveryCompany.DataLayer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("CouriersRating")
-                        .HasColumnType("int");
+                    b.Property<double>("CouriersRating")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");

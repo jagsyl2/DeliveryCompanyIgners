@@ -65,9 +65,10 @@ namespace DeliveryCompany.BusinessLayer
             if (now.TimeOfDay >= new TimeSpan(0, 18, 0, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 0, 59, 999))
             {
                 _packageStatus.ChangingPackageStatusAtTheEndOfJourney();
+                _packageStatus.ChangingPackageStatusFromManualWaybillAtTheEndOfWork();
             }
 
-            if (now.TimeOfDay >= new TimeSpan(0, 18, 1, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 1, 59, 999))
+            if (now.TimeOfDay >= new TimeSpan(0, 18, 05, 0, 0) && now.TimeOfDay <= new TimeSpan(0, 18, 05, 59, 999))
             {
                 _courierRatingsService.CountAverageRatingForWaybill();
             }

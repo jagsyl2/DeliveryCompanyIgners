@@ -81,14 +81,14 @@ namespace DeliveryCompany
             _loginMenu.AddOption(new MenuItem { Key = 2, Action = AddPackage, Discription = "Adding a new package." });
             _loginMenu.AddOption(new MenuItem { Key = 3, Action = AddVehicle, Discription = "Adding a new vehicle." });
             _loginMenu.AddOption(new MenuItem { Key = 4, Action = DisplayingCouriersEvaluation, Discription = "Displaying the evaluation of courier." });
-            _loginMenu.AddOption(new MenuItem { Key = 4, Action = () => { _exit = true; }, Discription = "Exit." });
+            _loginMenu.AddOption(new MenuItem { Key = 5, Action = () => { _exit = true; }, Discription = "Exit." });
         }
 
         private void DisplayingCouriersEvaluation()
         {
             var courierId = _ioHelper.GetIntFromUser("Enter courier's Id:");
 
-            var ratings = _courierRatingsService.GetListOfRatings(courierId);
+            var ratings = _courierRatingsService.GetListOfRatingsAsync(courierId).Result;
             if (ratings.Count==0)
             {
                 Console.WriteLine("No courier ratings!"); 

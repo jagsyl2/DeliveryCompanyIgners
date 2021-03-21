@@ -1,4 +1,5 @@
 ﻿using DeliveryCompany.BusinessLayer.Distances;
+using DeliveryCompany.BusinessLayer.Notifications;
 using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
@@ -21,9 +22,11 @@ namespace DeliveryCompany.BusinessLayer
         //Task UpdatePackagesOnManualWaybill(Package package);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage);
+        List<Package> GetPackagesWithStatusOnManualWaybill(StateOfPackage stateOfPackage);
         Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id);
         public List<Package> GetPackagesTodaysDelivered(string waybill);
         List<Package> GetAllPackagesWithoutCoordinates();
+        Task<Package> GetPackageAsync(int id);
     }
 
     public class PackageService : IPackageService
@@ -31,15 +34,18 @@ namespace DeliveryCompany.BusinessLayer
         private Func<IDeliveryCompanyDbContext> _deliveryCompanyDbContextFactoryMethod;
         private readonly ILocationService _locationService;
         private readonly ITimeProvider _fastForwardTimeProvider;
+        private readonly INotificationService _notificationService;
 
         public PackageService(
             Func<IDeliveryCompanyDbContext> deliveryCompanyDbContextFactoryMethod,
             ILocationService locationService,
-            ITimeProvider fastForwardTimeProvider)
+            ITimeProvider fastForwardTimeProvider,
+            INotificationService notificationService)
         {
             _deliveryCompanyDbContextFactoryMethod = deliveryCompanyDbContextFactoryMethod;
             _locationService = locationService;
             _fastForwardTimeProvider = fastForwardTimeProvider;
+            _notificationService = notificationService;
         }
 
         public async Task AddAsync(Package newPackage)
@@ -89,6 +95,8 @@ namespace DeliveryCompany.BusinessLayer
                 context.Packages.Update(package);
                 await context.SaveChangesAsync();
             }
+
+            _notificationService.NotifyOfPackageDelivery(package);
         }
 
         public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage)
@@ -148,6 +156,17 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
+        public List<Package> GetPackagesWithStatusOnManualWaybill(StateOfPackage stateOfPackage)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return context.Packages
+                    .Include(x => x.Sender)
+                    .Where(x => (x.State == stateOfPackage && x.ModeWaybill == ModeOfWaybill.Manual && (x.RecipientLat != 999 || x.RecipientLon != 999)))
+                    .ToList();
+            }
+        }
+
         public async Task<List<Package>> GetPackagesOnCouriersWaybillAsync(int id)
         {
             List<Package> waybill;
@@ -188,6 +207,16 @@ namespace DeliveryCompany.BusinessLayer
                     .AsQueryable()
                     .Where(x => (x.RecipientLat == 999 || x.RecipientLon == 999))
                     .ToList();
+            }
+        }
+
+        public async Task<Package> GetPackageAsync(int id)
+        {
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                return await context.Packages
+                    .AsQueryable()
+                    .FirstOrDefaultAsync(x => x.Id == id);
             }
         }
     }

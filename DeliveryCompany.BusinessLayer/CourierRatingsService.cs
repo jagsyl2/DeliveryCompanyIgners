@@ -1,16 +1,18 @@
 ﻿using DeliveryCompany.BusinessLayer.SpaceTimeProviders;
 using DeliveryCompany.DataLayer;
 using DeliveryCompany.DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.BusinessLayer
 {
     public interface ICourierRatingsService
     { 
         void CountAverageRatingForWaybill();
-        List<Rating> GetListOfRatings(int courierId);
+        Task<List<Rating>> GetListOfRatingsAsync(int courierId);
     }
 
     public class CourierRatingsService : ICourierRatingsService
@@ -44,7 +46,12 @@ namespace DeliveryCompany.BusinessLayer
             {
                 var waybill = $"{vehicle.DriverId}_{date}";
                 var packages = _packageService.GetPackagesTodaysDelivered(waybill);
-                var rating = packages.Sum(x => x.CourierRating) / packages.Count;
+                if (packages.Count==0)
+                {
+                    continue;
+                }
+                var rating = Math.Round((double)packages.Sum(x => x.CourierRating) / packages.Count,1);
+                
 
                 var ratingForWaybill = new Rating()
                 {
@@ -72,15 +79,15 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public List<Rating> GetListOfRatings(int courierId)
+        public async Task<List<Rating>> GetListOfRatingsAsync(int courierId)
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
-                return context.Ratings
+                return await context.Ratings
                     .AsQueryable()
                     .Where(x => x.UserId == courierId)
-                    .OrderBy(x => x.DateTime)
-                    .ToList();
+                    .OrderByDescending(x => x.DateTime)
+                    .ToListAsync();
             }
         }
     }

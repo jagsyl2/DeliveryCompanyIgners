@@ -2,6 +2,7 @@
 using DeliveryCompany.DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DeliveryCompany.WebApiTopShelf.Controllers
 {
@@ -15,10 +16,10 @@ namespace DeliveryCompany.WebApiTopShelf.Controllers
             _courierRatingsService = courierRatingsService;
         }
 
-        [HttpGet ("rating/{id}")]
-        public List<Rating> GetRatings(int id)
+        [HttpGet("rating/{id}")]
+        public async Task<List<Rating>> GetRatingsAsync(int id)
         {
-            return _courierRatingsService.GetListOfRatings(id);
+            return await _courierRatingsService.GetListOfRatingsAsync(id);
         }
     }
 }

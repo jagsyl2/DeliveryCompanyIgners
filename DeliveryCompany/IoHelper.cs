@@ -71,7 +71,7 @@ namespace DeliveryCompany
                 password = GetStringFromUser(message);
                 validation = true;
 
-                if (!string.IsNullOrWhiteSpace(password))
+                if (string.IsNullOrWhiteSpace(password))
                 {
                     WriteString("Incorrect password (must contain at least 1 character). Try again...");
 
@@ -147,7 +147,7 @@ namespace DeliveryCompany
 
             foreach (var rating in ratings)
             {
-                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime} - rating: {rating.CouriersRating}");
+                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime.ToString("yyyy.MM.dd")} - rating: {rating.CouriersRating}");
             }
             Console.WriteLine();
         }
