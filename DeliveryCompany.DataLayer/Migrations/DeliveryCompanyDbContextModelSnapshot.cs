@@ -26,6 +26,9 @@ namespace DeliveryCompany.DataLayer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int>("CourierRating")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateOfRegistration")
                         .HasColumnType("datetime2");
 
@@ -34,6 +37,9 @@ namespace DeliveryCompany.DataLayer.Migrations
 
                     b.Property<int>("ModeWaybill")
                         .HasColumnType("int");
+
+                    b.Property<string>("NameOfWaybill")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("Number")
                         .HasColumnType("uniqueidentifier");
@@ -82,6 +88,27 @@ namespace DeliveryCompany.DataLayer.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("DeliveryCompany.DataLayer.Models.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("CouriersRating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("DeliveryCompany.DataLayer.Models.User", b =>
