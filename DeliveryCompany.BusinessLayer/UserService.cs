@@ -17,6 +17,7 @@ namespace DeliveryCompany.BusinessLayer
         public Task<User> GetDriverAsync(string email, string password);
         void UpdatingCoordinatesOfExistingUsersInDatabase();
         void UpdatingCoordinatesOfExistingRecipientsInDatabase();
+        bool CheckingIfDriverExists(int courierId);
     }
 
     public class UserService : IUserService
@@ -77,7 +78,7 @@ namespace DeliveryCompany.BusinessLayer
 
         public List<User> GetAllDrivers()
         {
-            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
                     .AsQueryable()
@@ -94,6 +95,22 @@ namespace DeliveryCompany.BusinessLayer
                     .AsQueryable()
                     .Where(x => x.Type == TypeOfUser.Driver && x.Email == email && x.Password == password)
                     .FirstOrDefaultAsync();
+            }
+        }
+
+        public bool CheckingIfDriverExists(int courierId)
+        {
+            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                var courier = context.Users
+                    .FirstOrDefault(x => x.Id == courierId && x.Type == TypeOfUser.Driver);
+                
+                if (courier == null)
+                {
+                    return false;
+                }
+
+                return true;
             }
         }
 

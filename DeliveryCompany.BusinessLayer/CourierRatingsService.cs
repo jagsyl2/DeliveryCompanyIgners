@@ -52,7 +52,6 @@ namespace DeliveryCompany.BusinessLayer
                 }
                 var rating = Math.Round((double)packages.Sum(x => x.CourierRating) / packages.Count,1);
                 
-
                 var ratingForWaybill = new Rating()
                 {
                     UserId = vehicle.DriverId,

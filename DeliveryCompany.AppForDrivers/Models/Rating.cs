@@ -7,6 +7,6 @@ namespace DeliveryCompany.AppForDrivers.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime DateTime { get; set; }
-        public int CouriersRating { get; set; }
+        public double CouriersRating { get; set; }
     }
 }

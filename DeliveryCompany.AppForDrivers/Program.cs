@@ -79,6 +79,7 @@ namespace DeliveryCompany.AppForDrivers
 
         private void Menu()
         {
+            var logOut = false;
             do
             {
                 Console.WriteLine("Choose option:");
@@ -104,8 +105,11 @@ namespace DeliveryCompany.AppForDrivers
                     case 4:
                         RatingDisplay();
                         break;
+                    //case 5:
+                    //    logOut = LogOut();
+                    //    break;
                     case 5:
-                        _exit = LogOut();
+                        _exit = true;
                         break;
                     default:
                         Console.WriteLine("Unknown option");
@@ -115,15 +119,15 @@ namespace DeliveryCompany.AppForDrivers
             while (!_exit);
         }
 
-        private bool LogOut()
-        {
-            _user = null;
-            _waybill = null;
-            _vehicle = null;
-            _startTimeOfWork = DateTime.Today.AddHours(8);
+        //private bool LogOut()
+        //{
+        //    _user = null;
+        //    _waybill = null;
+        //    _vehicle = null;
+        //    _startTimeOfWork = DateTime.Today.AddHours(8);
 
-            return true;
-        }
+        //    return true;
+        //}
 
         private void RatingDisplay()
         {
@@ -208,7 +212,11 @@ namespace DeliveryCompany.AppForDrivers
                     Console.WriteLine("Package has already been delivered.");
                     return;
                 }
-
+                else
+                {
+                    UpdatePackageStatus(deliveredPackageId);
+                    return;
+                }
             }
             else
             {

@@ -87,6 +87,11 @@ namespace DeliveryCompany
         private void DisplayingCouriersEvaluation()
         {
             var courierId = _ioHelper.GetIntFromUser("Enter courier's Id:");
+            if (!_userService.CheckingIfDriverExists(courierId))
+            {
+                Console.WriteLine("There is no such driver.");
+                return;
+            }
 
             var ratings = _courierRatingsService.GetListOfRatingsAsync(courierId).Result;
             if (ratings.Count==0)
