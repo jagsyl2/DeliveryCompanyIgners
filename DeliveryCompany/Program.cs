@@ -16,6 +16,7 @@ namespace DeliveryCompany
         private readonly IIoHelper                  _ioHelper;
         private readonly IMenu                      _loginMenu;
         private readonly ITimerSheduler             _timerService;
+        private readonly ICourierRatingsService     _courierRatingsService;
 
         private bool _exit;
         
@@ -36,7 +37,8 @@ namespace DeliveryCompany
             IUserService                userService,
             IIoHelper                   ioHelper,
             IMenu                       loginMenu,
-            ITimerSheduler              timerSheduler
+            ITimerSheduler              timerSheduler,
+            ICourierRatingsService      courierRatingsService
             )
         {
             _databaseManagmentService = databaseManagmentService;
@@ -49,6 +51,7 @@ namespace DeliveryCompany
             _ioHelper = ioHelper;
             _loginMenu = loginMenu;
             _timerService = timerSheduler;
+            _courierRatingsService = courierRatingsService;
         }
 
         void Run()
@@ -74,10 +77,30 @@ namespace DeliveryCompany
 
         private void RegisterMenuOptions()
         {
-            _loginMenu.AddOption(new MenuItem { Key = 1, Action = AddUser, Discription = "Adding a new user." });
+            _loginMenu.AddOption(new MenuItem { Key = 1, Action = AddUser,    Discription = "Adding a new user." });
             _loginMenu.AddOption(new MenuItem { Key = 2, Action = AddPackage, Discription = "Adding a new package." });
             _loginMenu.AddOption(new MenuItem { Key = 3, Action = AddVehicle, Discription = "Adding a new vehicle." });
-            _loginMenu.AddOption(new MenuItem { Key = 4, Action = () => { _exit = true; }, Discription = "Exit." });
+            _loginMenu.AddOption(new MenuItem { Key = 4, Action = DisplayingCouriersEvaluation, Discription = "Displaying the evaluation of courier." });
+            _loginMenu.AddOption(new MenuItem { Key = 5, Action = () => { _exit = true; }, Discription = "Exit." });
+        }
+
+        private void DisplayingCouriersEvaluation()
+        {
+            var courierId = _ioHelper.GetIntFromUser("Enter courier's Id:");
+            if (!_userService.CheckingIfDriverExists(courierId))
+            {
+                Console.WriteLine("There is no such driver.");
+                return;
+            }
+
+            var ratings = _courierRatingsService.GetListOfRatingsAsync(courierId).Result;
+            if (ratings.Count==0)
+            {
+                Console.WriteLine("No courier ratings!");
+                return;
+            }
+
+            _ioHelper.Print(courierId, ratings);
         }
 
         private void AddVehicle()

@@ -11,11 +11,17 @@ namespace DeliveryCompany.AppForDrivers.Models
 
     public enum StateOfPackage
     {
-        AwaitingPosting,
-        Given,
-        OnTheWay,
-        AwaitingPickup,
-        Received
+        AwaitingPosting = 0,
+        Given = 1,
+        OnTheWay = 2,
+        DeliveredManually = 3,
+        Received = 4
+    }
+
+    public enum ModeOfWaybill
+    {
+        Automatic = 1,
+        Manual = 2,
     }
 
     public class Package
@@ -27,6 +33,10 @@ namespace DeliveryCompany.AppForDrivers.Models
         public PackageSize Size { get; set; }
         public DateTime DateOfRegistration { get; set; }
         public StateOfPackage State { get; set; }
+        public ModeOfWaybill ModeWaybill { get; set; }
+        public string NameOfWaybill { get; set; }
+        public DateTime DeliveryDate { get; set; }
+        public int CourierRating { get; set; }
         public int VehicleNumber { get; set; }
         public string RecipientName { get; set; }
         public string RecipientSurname { get; set; }

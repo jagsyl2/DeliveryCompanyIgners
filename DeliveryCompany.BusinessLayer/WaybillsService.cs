@@ -108,7 +108,7 @@ namespace DeliveryCompany.BusinessLayer
                 {
                     courierId = FindTheNearestCourier(distances);                                           //wybieram kuriera, który jest najbliżej nadanej paczki
 
-                    vehicle = _vehicleService.GetVehicle(courierId);                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
+                    vehicle = _vehicleService.GetVehicleAsync(courierId).Result;                                            //jeśli mam kuriera, który jest najbliżej, odnajduję jego samochód
                     if (vehicle == null)                                                                        //zabezpieczam się też na wypadek gdyby kurier był na tyle nowy, że jeszcze nie dano mu samochodu
                     {
                         distances.Remove(courierId);
@@ -135,7 +135,7 @@ namespace DeliveryCompany.BusinessLayer
                 var currentCuriersLocation = courierLocationAlongTheWay[courierId];
                 if (currentCuriersLocation.FirstPackageForCourier == true)
                 {
-                    var firstPackageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var firstPackageSender = new LocationCoordinates() { Lat = package.Sender.Lat, Lon = package.Sender.Lon };
                     var firstPackageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     var vehicleRangeWithPackage = AddedDistancesBetweenTwoPlacesForFirstPackage(currentCuriersLocation, firstPackageSender, firstPackageRecipient);
@@ -146,13 +146,13 @@ namespace DeliveryCompany.BusinessLayer
                         continue;
                     }
 
-                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0];
+                    vehicleRange[vehicle.Id] -= vehicleRangeWithPackage[0]; 
 
                     UpdateCourierLocationsAlongTheWayForFirstPackage(courierLocationAlongTheWay, courierId, firstPackageSender, firstPackageRecipient);
                 }
                 else
                 {
-                    var packageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var packageSender = new LocationCoordinates() { Lat = package.Sender.Lat, Lon = package.Sender.Lon };
                     var packageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     List<double> vehicleRangeWithPackage = AddedDistancesBetweenTwoPlaces(currentCuriersLocation, packageSender, packageRecipient);
@@ -170,6 +170,7 @@ namespace DeliveryCompany.BusinessLayer
                 vehiclesLoadCapacity[vehicle.Id] -= (int)package.Size;                                          //jeśli się paczka mieści to zmniejszam dzisiejszą wolną przestrzeń w samochodzie
 
                 package.VehicleNumber = vehicle.Id;                                                             //wszystko jest ok, paczka ma przypisany nr samochodu, którym będzie podróżowała
+                package.NameOfWaybill = $"{vehicle.DriverId}_{_fastForwardTimeProvider.Now.ToString("yyyy-MM-dd")}";
 
                 todaysPackages.Add(package);                                                                    //tworzę listę paczek, które dzisiaj będą podróżowały
             }
@@ -227,7 +228,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 var courierLocations = new CourierLocationsAlongTheWay()
                 {
-                    StartingPlace = new LocationCoordinates { Lat = courier.lat, Lon = courier.lon },
+                    StartingPlace = new LocationCoordinates { Lat = courier.Lat, Lon = courier.Lon },
                 };
                 courierLocationAlongTheWay.Add(courier.Id, courierLocations);
             }

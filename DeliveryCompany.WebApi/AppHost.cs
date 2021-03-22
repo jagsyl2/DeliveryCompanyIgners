@@ -85,6 +85,5 @@ namespace DeliveryCompany.WebApiTopShelf
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             genOptions.IncludeXmlComments(xmlPath);
         }
-
     }
 }

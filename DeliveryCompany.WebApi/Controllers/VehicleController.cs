@@ -34,5 +34,11 @@ namespace DeliveryCompany.WebApiTopShelf.Controllers
         {
             await _vehicleService.AddAsync(vehicle);
         }
+
+        [HttpGet("{id}")]
+        public async Task<Vehicle> GetVehicleByDriverIdAsync(int id)
+        {
+            return await _vehicleService.GetVehicleAsync(id);
+        }
     }
 }

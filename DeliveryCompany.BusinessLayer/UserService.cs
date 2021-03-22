@@ -17,6 +17,7 @@ namespace DeliveryCompany.BusinessLayer
         public Task<User> GetDriverAsync(string email, string password);
         void UpdatingCoordinatesOfExistingUsersInDatabase();
         void UpdatingCoordinatesOfExistingRecipientsInDatabase();
+        bool CheckingIfDriverExists(int courierId);
     }
 
     public class UserService : IUserService
@@ -49,8 +50,8 @@ namespace DeliveryCompany.BusinessLayer
         private User CoordinateAssignment(User user)
         {
             var locationCoordinates = _locationService.ChangeLocationToCoordinates(user);
-            user.lat = locationCoordinates.Lat;
-            user.lon = locationCoordinates.Lon;
+            user.Lat = locationCoordinates.Lat;
+            user.Lon = locationCoordinates.Lon;
 
             return user;
         }
@@ -70,18 +71,18 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => x.Type == TypeOfUser.Customer && (x.lat != 999 || x.lon != 999))
+                    .Where(x => x.Type == TypeOfUser.Customer && (x.Lat != 999 || x.Lon != 999))
                     .ToList();
             }
         }
 
         public List<User> GetAllDrivers()
         {
-            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => x.Type == TypeOfUser.Driver && (x.lat != 999 || x.lon != 999))
+                    .Where(x => x.Type == TypeOfUser.Driver && (x.Lat != 999 || x.Lon != 999))
                     .ToList();
             }
         }
@@ -97,13 +98,29 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
+        public bool CheckingIfDriverExists(int courierId)
+        {
+            using(var context = _deliveryCompanyDbContextFactoryMethod())
+            {
+                var courier = context.Users
+                    .FirstOrDefault(x => x.Id == courierId && x.Type == TypeOfUser.Driver);
+                
+                if (courier == null)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         public List<User> GetAllUsersWithoutCoordinates()
         {
             using (var context = _deliveryCompanyDbContextFactoryMethod())
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => (x.lat == 999 || x.lon == 999))
+                    .Where(x => (x.Lat == 999 || x.Lon == 999))
                     .ToList();
             }
         }
@@ -117,8 +134,8 @@ namespace DeliveryCompany.BusinessLayer
                 try
                 {
                     var userCoordinate = _locationService.ChangeLocationToCoordinates(user);
-                    user.lat = userCoordinate.Lat;
-                    user.lon = userCoordinate.Lon;
+                    user.Lat = userCoordinate.Lat;
+                    user.Lon = userCoordinate.Lon;
 
                     Update(user);
                 }
@@ -146,7 +163,7 @@ namespace DeliveryCompany.BusinessLayer
                     package.RecipientLat = packageCoordinate.Lat;
                     package.RecipientLon = packageCoordinate.Lon;
 
-                    _packageService.Update(package);
+                    _packageService.UpdateAsync(package);
                 }
                 catch (Exception)
                 {

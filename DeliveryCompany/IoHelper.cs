@@ -15,6 +15,7 @@ namespace DeliveryCompany
         void PrintUsers(List<User> users, string message);
         void WriteString(string message);
         string GetPasswordFromUser(string message);
+        void Print(int courierId, List<Rating> ratings);
     }
 
     public class IoHelper : IIoHelper
@@ -70,7 +71,7 @@ namespace DeliveryCompany
                 password = GetStringFromUser(message);
                 validation = true;
 
-                if (!string.IsNullOrWhiteSpace(password))
+                if (string.IsNullOrWhiteSpace(password))
                 {
                     WriteString("Incorrect password (must contain at least 1 character). Try again...");
 
@@ -138,6 +139,17 @@ namespace DeliveryCompany
         public void PrintUser(User user)
         {
             Console.WriteLine($"{user.Id}.{user.Name} {user.Surname} - {user.Type}");
+        }
+
+        public void Print(int courierId, List<Rating> ratings)
+        {
+            Console.WriteLine($"Ratings for the courier {courierId}");
+
+            foreach (var rating in ratings)
+            {
+                Console.WriteLine($"{rating.Id}. Waybill dated: {rating.DateTime.ToString("yyyy.MM.dd")} - rating: {rating.CouriersRating}");
+            }
+            Console.WriteLine();
         }
     }
 }

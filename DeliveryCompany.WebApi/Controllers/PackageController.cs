@@ -46,12 +46,30 @@ namespace DeliveryCompany.WebApiTopShelf.Controllers
         }
 
         /// <summary>
-        /// Enter the driver's id
+        /// Enter the vehicle's id
         /// </summary>
         [HttpGet("waybill/{id}")]
         public async Task<List<Package>> GetPackagesOnWaybillAsync(int id)
         {
             return await _packageService.GetPackagesOnCouriersWaybillAsync(id);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<Package> GetPackageAsync(int id)
+        {
+            return await _packageService.GetPackageAsync(id);
+        }
+
+        [HttpPut("status/{id}")]
+        public async Task PutPackageStatusAsync(int id, [FromBody]Package package)
+        {
+            await _packageService.UpdateByIdWithNotifyAsync(id, package);
+        }
+
+        [HttpPut("waybill")]
+        public async Task PutPackagesOnWaybillAsync([FromBody]Package package)
+        {
+            await _packageService.UpdateAsync(package);
         }
     }
 }
