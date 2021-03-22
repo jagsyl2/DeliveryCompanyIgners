@@ -135,7 +135,7 @@ namespace DeliveryCompany.BusinessLayer
                 var currentCuriersLocation = courierLocationAlongTheWay[courierId];
                 if (currentCuriersLocation.FirstPackageForCourier == true)
                 {
-                    var firstPackageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var firstPackageSender = new LocationCoordinates() { Lat = package.Sender.Lat, Lon = package.Sender.Lon };
                     var firstPackageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     var vehicleRangeWithPackage = AddedDistancesBetweenTwoPlacesForFirstPackage(currentCuriersLocation, firstPackageSender, firstPackageRecipient);
@@ -152,7 +152,7 @@ namespace DeliveryCompany.BusinessLayer
                 }
                 else
                 {
-                    var packageSender = new LocationCoordinates() { Lat = package.Sender.lat, Lon = package.Sender.lon };
+                    var packageSender = new LocationCoordinates() { Lat = package.Sender.Lat, Lon = package.Sender.Lon };
                     var packageRecipient = new LocationCoordinates() { Lat = package.RecipientLat, Lon = package.RecipientLon };
 
                     List<double> vehicleRangeWithPackage = AddedDistancesBetweenTwoPlaces(currentCuriersLocation, packageSender, packageRecipient);
@@ -228,7 +228,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 var courierLocations = new CourierLocationsAlongTheWay()
                 {
-                    StartingPlace = new LocationCoordinates { Lat = courier.lat, Lon = courier.lon },
+                    StartingPlace = new LocationCoordinates { Lat = courier.Lat, Lon = courier.Lon },
                 };
                 courierLocationAlongTheWay.Add(courier.Id, courierLocations);
             }

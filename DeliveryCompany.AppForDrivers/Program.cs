@@ -7,31 +7,49 @@ using System.Collections.Generic;
 using System.Text;
 using DeliveryCompany.AppForDrivers.Distances;
 using DeliveryCompany.DataLayer.Models;
-using System.Linq;
 using DeliveryCompany.AppForDrivers.SpaceTimeProviders;
+using Unity;
 
 namespace DeliveryCompany.AppForDrivers
 {
     class Program
     {
-        private readonly IoHelper _ioHelper = new IoHelper();
-        private readonly LocationService _locationService = new LocationService();
-        private readonly FastForwardTimeProvider _fastForwardTimeProvider = new FastForwardTimeProvider();
+        private readonly ITimeProvider    _fastForwardTimeProvider;
+        private readonly ILocationService _locationService;
+        private readonly IIoHelper        _ioHelper;
+        private readonly IPackageServices _packageServices;
 
         private bool _exit = false;
+
         private User _user = null;
         private List<Package> _waybill = null;
         private Vehicle _vehicle = null;
         private DateTime _startTimeOfWork;
-        private const double _minutes = 60.0d;
-        private List<WaybillItem> _waybillItems =new List<WaybillItem>();
 
+        private const double _minutes = 60.0d;
+
+        private List<WaybillItem> _waybillItems = new List<WaybillItem>();
+        
         static void Main(string[] args)
         {
-            new Program().Run();
+            var container = new UnityDiContainerProvider().GetContainer();
+
+            container.Resolve<Program>().Run();
         }
 
-        private void Run()
+        public Program(
+            ITimeProvider fastForwardTimeProvider,
+            ILocationService locationService,
+            IIoHelper        ioHelper,
+            IPackageServices packageServices)
+        {
+            _fastForwardTimeProvider = fastForwardTimeProvider;
+            _locationService = locationService;
+            _ioHelper = ioHelper;
+            _packageServices = packageServices;
+        }
+
+        void Run()
         {
             do
             {
@@ -54,7 +72,7 @@ namespace DeliveryCompany.AppForDrivers
                     var responseObject = JsonConvert.DeserializeObject<User>(responseText);
                     _user = responseObject;
                     _vehicle = GetVehicle();
-                    _startTimeOfWork = GetStartTime();
+                    _startTimeOfWork = _packageServices.GetStartTime();
                     Menu();
                 }
                 else
@@ -65,21 +83,8 @@ namespace DeliveryCompany.AppForDrivers
             }
         }
 
-        private DateTime GetStartTime()
-        {
-            if (0 < _fastForwardTimeProvider.Now.Hour && _fastForwardTimeProvider.Now.Hour< 8)
-            {
-                return _fastForwardTimeProvider.Now;
-            }
-            else
-            {
-                return _fastForwardTimeProvider.Now.Date.AddHours(8);
-            }
-        }
-
         private void Menu()
         {
-            var logOut = false;
             do
             {
                 Console.WriteLine("Choose option:");
@@ -105,9 +110,6 @@ namespace DeliveryCompany.AppForDrivers
                     case 4:
                         RatingDisplay();
                         break;
-                    //case 5:
-                    //    logOut = LogOut();
-                    //    break;
                     case 5:
                         _exit = true;
                         break;
@@ -118,16 +120,6 @@ namespace DeliveryCompany.AppForDrivers
             } 
             while (!_exit);
         }
-
-        //private bool LogOut()
-        //{
-        //    _user = null;
-        //    _waybill = null;
-        //    _vehicle = null;
-        //    _startTimeOfWork = DateTime.Today.AddHours(8);
-
-        //    return true;
-        //}
 
         private void RatingDisplay()
         {
@@ -153,13 +145,6 @@ namespace DeliveryCompany.AppForDrivers
             }
         }
 
-
-
-
-
-
-
-
         private void ManualDevelopmentOfPackages()
         {
             if (_waybill == null)
@@ -171,135 +156,19 @@ namespace DeliveryCompany.AppForDrivers
             Console.WriteLine("Avaiable options:");
             Console.WriteLine("1. Mark the delivered package.");
             Console.WriteLine("2. Back to options.");
-            var userChoice = _ioHelper.GetIntFromUser("Choose option:");
 
+            var userChoice = _ioHelper.GetIntFromUser("Choose option:");
 
             switch (userChoice)
             {
                 case 1:
-                    MarkDeliveredPackage();
+                     _packageServices.MarkDeliveredPackage(_waybill, _waybillItems);
                     break;
                 case 2:
                     return;
                 default:
                     Console.WriteLine("Unknown options. Try again...");
                     break;
-            }
-        }
-
-        private void MarkDeliveredPackage()
-        {
-            var deliveredPackageId = _ioHelper.GetIntFromUser("Provide the number of the delivered package:");
-            if (!_waybill.Any(x => x.Id == deliveredPackageId))
-            {
-                Console.WriteLine("There is no such package.");
-                return;
-            }
-            if (_waybill.Any(x => x.Id == deliveredPackageId && x.State==StateOfPackage.DeliveredManually))
-            {
-                Console.WriteLine("Package has already been delivered.");
-            }
-            if (_waybill.Any(x => x.Id == deliveredPackageId && x.ModeWaybill == ModeOfWaybill.Automatic))
-            {
-                var package = GetPackage(deliveredPackageId);
-                if (package == null)
-                {
-                    Console.WriteLine("There is no such package.");
-                    return;
-                }
-                if (package.State == StateOfPackage.Received)
-                {
-                    Console.WriteLine("Package has already been delivered.");
-                    return;
-                }
-                else
-                {
-                    UpdatePackageStatus(deliveredPackageId);
-                    return;
-                }
-            }
-            else
-            {
-                UpdatePackageStatus(deliveredPackageId);
-                return;
-            }
-
-        }
-
-        private Package GetPackage(int deliveredPackageId)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var response = httpClient.GetAsync($@"http://localhost:10500/api/packages/{deliveredPackageId}").Result;
-                var responseText = response.Content.ReadAsStringAsync().Result;
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var responseObject = JsonConvert.DeserializeObject<Package>(responseText);
-                    return responseObject;
-                }
-                else
-                {
-                    Console.WriteLine("Something went wrong");
-                    return null;
-                }
-            }
-        }
-
-        private void UpdatePackageStatus(int deliveredPackageId)
-        {
-            var package = _waybill.FirstOrDefault(x => x.Id == deliveredPackageId);
-
-            package.State = StateOfPackage.DeliveredManually;
-            package.DeliveryDate = _fastForwardTimeProvider.Now;
-            var estimatedDeliveryTime = _waybillItems
-                .Where(x => x.Package.Id == deliveredPackageId && x.TypeOfPackage == TypeOfPackages.ToBeDelivered)
-                .Select(x=>x.EstimatedDeliveryTime)
-                .FirstOrDefault();
-
-            package.CourierRating = CountCouriersRating(package, estimatedDeliveryTime);
-
-            var content = new StringContent(JsonConvert.SerializeObject(package), Encoding.UTF8, "application/json");
-
-            using (var httpClient = new HttpClient())
-            {
-                var response = httpClient.PutAsync($@"http://localhost:10500/api/packages/status/{deliveredPackageId}", content).Result;
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    Console.WriteLine($"Success.");
-                    return;
-                }
-                else
-                {
-                    Console.WriteLine($"Failed again. Status code: {response.StatusCode}");
-                    return;
-                }
-            }
-        }
-
-        private int CountCouriersRating(Package package, DateTime estimatedDeliveryTime)
-        {
-            var deviation = (package.DeliveryDate - estimatedDeliveryTime).TotalMinutes;
-
-            if (-10 < deviation && deviation < 10)
-            {
-                return 5;
-            }
-            if (-20 < deviation && deviation < 20)
-            {
-                return 4;
-            }
-            if (-30 < deviation && deviation < 30)
-            {
-                return 3;
-            }
-            if (-40 < deviation && deviation < 40)
-            {
-                return 2;
-            }
-            else 
-            {
-                return 1;
             }
         }
 
@@ -311,48 +180,24 @@ namespace DeliveryCompany.AppForDrivers
                 return;
             }
 
-            var currentLocation = new LocationCoordinates
-            {
-                Lat = _user.lat,
-                Lon = _user.lon,
-            };
+            var currentLocation = new LocationCoordinates {Lat = _user.Lat, Lon = _user.Lon };
 
             var deliveryTime = _startTimeOfWork;
 
             foreach (var package in _waybill)
             {
-                var distance = _locationService.GetDistanceBetweenTwoPlaces(currentLocation, package.Sender.lat, package.Sender.lon);
-                var waybillItem = new WaybillItem
-                {
-                    Package = package,
-                    Distance = distance,
-                    Time = Math.Round(distance / (double)_vehicle.AverageSpeed * _minutes),
-                    TypeOfPackage = TypeOfPackages.ForPickup,
-                };
-                waybillItem.EstimatedDeliveryTime = deliveryTime.AddMinutes(waybillItem.Time);
+                var distance = _locationService.GetDistanceBetweenTwoPlaces(currentLocation, package.Sender.Lat, package.Sender.Lon);
+                deliveryTime = CountEstimatedDeliveryTime(deliveryTime, package, distance, TypeOfPackages.ForPickup);
 
-                _waybillItems.Add(waybillItem);
-
-                deliveryTime = waybillItem.EstimatedDeliveryTime;
-                currentLocation.Lat = package.Sender.lat;
-                currentLocation.Lon = package.Sender.lon;
+                currentLocation.Lat = package.Sender.Lat;
+                currentLocation.Lon = package.Sender.Lon;
             }
 
             foreach (var package in _waybill)
             {
                 var distance = _locationService.GetDistanceBetweenTwoPlaces(currentLocation, package.RecipientLat, package.RecipientLon);
-                var waybillItem = new WaybillItem
-                {
-                    Package = package,
-                    Distance = distance,
-                    Time = Math.Round(distance / (double)_vehicle.AverageSpeed * _minutes),
-                    TypeOfPackage = TypeOfPackages.ToBeDelivered,
-                };
-                waybillItem.EstimatedDeliveryTime = deliveryTime.AddMinutes(waybillItem.Time);
-
-                _waybillItems.Add(waybillItem);
-
-                deliveryTime = waybillItem.EstimatedDeliveryTime;
+                deliveryTime = CountEstimatedDeliveryTime(deliveryTime, package, distance, TypeOfPackages.ToBeDelivered);
+                
                 currentLocation.Lat = package.RecipientLat;
                 currentLocation.Lon = package.RecipientLon;
             }
@@ -361,6 +206,23 @@ namespace DeliveryCompany.AppForDrivers
             {
                 _ioHelper.PrintPackageAlongTheRoute(item);
             }
+        }
+
+        private DateTime CountEstimatedDeliveryTime(DateTime deliveryTime, Package package, double distance, TypeOfPackages typeOfPackages)
+        {
+            var waybillItem = new WaybillItem
+            {
+                Package = package,
+                Distance = distance,
+                Time = Math.Round(distance / (double)_vehicle.AverageSpeed * _minutes),
+                TypeOfPackage = typeOfPackages,
+            };
+            waybillItem.EstimatedDeliveryTime = deliveryTime.AddMinutes(waybillItem.Time);
+
+            _waybillItems.Add(waybillItem);
+
+            deliveryTime = waybillItem.EstimatedDeliveryTime;
+            return deliveryTime;
         }
 
         private Vehicle GetVehicle()
@@ -432,7 +294,7 @@ namespace DeliveryCompany.AppForDrivers
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    Console.WriteLine($"Success.");
+                    Console.WriteLine($"The package has been updated.");
                 }
                 else
                 {

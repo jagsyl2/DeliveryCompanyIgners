@@ -17,9 +17,8 @@ namespace DeliveryCompany.BusinessLayer
         Task UpdateAsync(Package package);
         void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage);
         public void UpdatePackages(List<Package> packages, StateOfPackage stateOfPackage, int couriersRating);
-        Task UpdateByIdAsync(int id, Package package);
+        Task UpdateByIdWithNotifyAsync(int id, Package package);
         void UpdatePackagesOnAutomaticWaybill(List<Package> packages, StateOfPackage stateOfPackage);
-        //Task UpdatePackagesOnManualWaybill(Package package);
         List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatusOnAutomaticWaybill(StateOfPackage stateOfPackage);
         List<Package> GetPackagesWithStatusOnManualWaybill(StateOfPackage stateOfPackage);
@@ -86,7 +85,7 @@ namespace DeliveryCompany.BusinessLayer
             }
         }
 
-        public async Task UpdateByIdAsync(int id, Package package)
+        public async Task UpdateByIdWithNotifyAsync(int id, Package package)
         {
             package.Id = id;
 
@@ -127,12 +126,6 @@ namespace DeliveryCompany.BusinessLayer
                 UpdateAsync(package).Wait();
             }
         }
-
-        //public async Task UpdatePackagesOnManualWaybill(Package package)
-        //{
-        //        package.ModeWaybill = ModeOfWaybill.Manual;
-        //        await UpdateAsync(package);
-        //}
 
         public List<Package> GetPackagesWithStatus(StateOfPackage stateOfPackage)
         {
@@ -178,10 +171,10 @@ namespace DeliveryCompany.BusinessLayer
                     .ToListAsync();
             }
 
-            //foreach (var package in waybill)
-            //{
-            //    package.Sender.Password = "Unavailable";
-            //}
+            foreach (var package in waybill)
+            {
+                package.Sender.Password = "Unavailable";
+            }
 
             return waybill;
         }

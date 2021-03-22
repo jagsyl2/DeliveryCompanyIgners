@@ -2,8 +2,12 @@
 
 namespace DeliveryCompany.AppForDrivers.Distances
 {
+    public interface ILocationService
+    {
+        double GetDistanceBetweenTwoPlaces(LocationCoordinates originLocation, double destinationLat, double destinationLon);
+    }
 
-    public class LocationService
+    public class LocationService : ILocationService
     {
         public double GetDistanceBetweenTwoPlaces(LocationCoordinates originLocation, double destinationLat, double destinationLon)
         {

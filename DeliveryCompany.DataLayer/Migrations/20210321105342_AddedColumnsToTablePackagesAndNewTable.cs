@@ -34,6 +34,16 @@ namespace DeliveryCompany.DataLayer.Migrations
                 type: "nvarchar(max)",
                 nullable: true);
 
+            migrationBuilder.RenameColumn(
+                name: "lon",
+                table: "Users",
+                newName: "Lon");
+
+            migrationBuilder.RenameColumn(
+                name: "lat",
+                table: "Users",
+                newName: "Lat");
+
             migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
@@ -70,6 +80,16 @@ namespace DeliveryCompany.DataLayer.Migrations
             migrationBuilder.DropColumn(
                 name: "NameOfWaybill",
                 table: "Packages");
+
+            migrationBuilder.RenameColumn(
+                name: "Lon",
+                table: "Users",
+                newName: "lon");
+
+            migrationBuilder.RenameColumn(
+                name: "Lat",
+                table: "Users",
+                newName: "lat");
         }
     }
 }

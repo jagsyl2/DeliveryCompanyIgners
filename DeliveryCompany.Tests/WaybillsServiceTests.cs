@@ -91,8 +91,8 @@ namespace DeliveryCompany.Tests
                 RecipientLon = 18,
                 Sender = new User()
                 {
-                    lat = 53.5,
-                    lon = 19
+                    Lat = 53.5,
+                    Lon = 19
                 },
                 Size = PackageSize.Average
             });
@@ -116,9 +116,9 @@ namespace DeliveryCompany.Tests
                 .Setup(x => x.GetAllVehicles())
                 .Returns(vehicles);
 
-            //vehicleServiceMock
-            //    .Setup(x => x.GetVehicleAsync(5))
-            //    .Returns(new Vehicle());
+            vehicleServiceMock
+                .Setup(x => x.GetVehicleAsync(5).Result)
+                .Returns(new Vehicle());
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
@@ -153,15 +153,15 @@ namespace DeliveryCompany.Tests
                 RecipientLon = 18,
                 Sender = new User()
                 {
-                    lat = 53.5,
-                    lon = 19 
+                    Lat = 53.5,
+                    Lon = 19 
                 },
                 Size = PackageSize.Average
             });
 
             List<User> users = new List<User>();
-            users.Add(new User() { Id = 5, lat = 52, lon = 21 });
-            users.Add(new User() { Id = 6, lat = 53, lon = 20 });
+            users.Add(new User() { Id = 5, Lat = 52, Lon = 21 });
+            users.Add(new User() { Id = 6, Lat = 53, Lon = 20 });
 
             Dictionary<int, double> distance = new Dictionary<int, double>();
             distance.Add(5, 20);
@@ -186,9 +186,9 @@ namespace DeliveryCompany.Tests
                 .Setup(x => x.GetAllVehicles())
                 .Returns(vehicles);
 
-            //vehicleServiceMock
-            //    .Setup(x => x.GetVehicleAsync(5))
-            //    .Returns(new Vehicle() { Id = 5 });
+            vehicleServiceMock
+                .Setup(x => x.GetVehicleAsync(5).Result)
+                .Returns(new Vehicle() { Id = 5 });
 
             var locationServiceMock = new Mock<ILocationService>();
             locationServiceMock
@@ -252,10 +252,10 @@ namespace DeliveryCompany.Tests
         public void AssignPackagesToCouriers_Give4Packages_ReturnListWith3Positions()
         {
             List<Package> packages = new List<Package>();
-            packages.Add(new Package() { Id = 1, Size = PackageSize.Average, Sender = new User() { lat = 53.5, lon = 19 }});
-            packages.Add(new Package() { Id = 2, Size = PackageSize.Large, Sender = new User() { lat = 53.5, lon = 19 } });
-            packages.Add(new Package() { Id = 3, Size = PackageSize.Average, Sender = new User() { lat = 53.5, lon = 19 } });
-            packages.Add(new Package() { Id = 4, Size = PackageSize.Small, Sender = new User() { lat = 53.5, lon = 19 } });
+            packages.Add(new Package() { Id = 1, Size = PackageSize.Average, Sender = new User() { Lat = 53.5, Lon = 19 }});
+            packages.Add(new Package() { Id = 2, Size = PackageSize.Large, Sender = new User() { Lat = 53.5, Lon = 19 } });
+            packages.Add(new Package() { Id = 3, Size = PackageSize.Average, Sender = new User() { Lat = 53.5, Lon = 19 } });
+            packages.Add(new Package() { Id = 4, Size = PackageSize.Small, Sender = new User() { Lat = 53.5, Lon = 19 } });
 
             List<User> users = new List<User>();
             users.Add(new User() { Id = 5, Street = "Œliska", StreetNumber = "28C", City = "Gdynia" });
@@ -278,9 +278,9 @@ namespace DeliveryCompany.Tests
                 .Returns(users);
 
             var vehicleServiceMock = new Mock<IVehicleService>();
-            //vehicleServiceMock
-                //.Setup(x => x.GetVehicleAsync(5))
-                //.Returns(new Vehicle() { Id = 5 });
+            vehicleServiceMock
+                .Setup(x => x.GetVehicleAsync(5).Result)
+                .Returns(new Vehicle() { Id = 5 });
 
             vehicleServiceMock
                 .Setup(x => x.GetAllVehicles())

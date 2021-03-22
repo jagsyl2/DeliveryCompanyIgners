@@ -96,7 +96,8 @@ namespace DeliveryCompany
             var ratings = _courierRatingsService.GetListOfRatingsAsync(courierId).Result;
             if (ratings.Count==0)
             {
-                Console.WriteLine("No courier ratings!"); 
+                Console.WriteLine("No courier ratings!");
+                return;
             }
 
             _ioHelper.Print(courierId, ratings);

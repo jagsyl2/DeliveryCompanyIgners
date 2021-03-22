@@ -58,16 +58,16 @@ namespace DeliveryCompany.BusinessLayer.Distances
 
             var packageLocationCoordinates = new LocationCoordinates()
             {
-                Lat = package.Sender.lat,
-                Lon = package.Sender.lon
+                Lat = package.Sender.Lat,
+                Lon = package.Sender.Lon
             };
 
             foreach (var courier in couriers)
             {
                 var courierLocationCoordinates = new LocationCoordinates()
                 {
-                    Lat = courier.lat,
-                    Lon = courier.lon
+                    Lat = courier.Lat,
+                    Lon = courier.Lon
                 };
 
                 var distance = GetDistanceBetweenTwoPlaces(packageLocationCoordinates, courierLocationCoordinates);

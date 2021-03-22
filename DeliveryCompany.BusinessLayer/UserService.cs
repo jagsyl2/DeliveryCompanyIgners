@@ -50,8 +50,8 @@ namespace DeliveryCompany.BusinessLayer
         private User CoordinateAssignment(User user)
         {
             var locationCoordinates = _locationService.ChangeLocationToCoordinates(user);
-            user.lat = locationCoordinates.Lat;
-            user.lon = locationCoordinates.Lon;
+            user.Lat = locationCoordinates.Lat;
+            user.Lon = locationCoordinates.Lon;
 
             return user;
         }
@@ -71,7 +71,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => x.Type == TypeOfUser.Customer && (x.lat != 999 || x.lon != 999))
+                    .Where(x => x.Type == TypeOfUser.Customer && (x.Lat != 999 || x.Lon != 999))
                     .ToList();
             }
         }
@@ -82,7 +82,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => x.Type == TypeOfUser.Driver && (x.lat != 999 || x.lon != 999))
+                    .Where(x => x.Type == TypeOfUser.Driver && (x.Lat != 999 || x.Lon != 999))
                     .ToList();
             }
         }
@@ -120,7 +120,7 @@ namespace DeliveryCompany.BusinessLayer
             {
                 return context.Users
                     .AsQueryable()
-                    .Where(x => (x.lat == 999 || x.lon == 999))
+                    .Where(x => (x.Lat == 999 || x.Lon == 999))
                     .ToList();
             }
         }
@@ -134,8 +134,8 @@ namespace DeliveryCompany.BusinessLayer
                 try
                 {
                     var userCoordinate = _locationService.ChangeLocationToCoordinates(user);
-                    user.lat = userCoordinate.Lat;
-                    user.lon = userCoordinate.Lon;
+                    user.Lat = userCoordinate.Lat;
+                    user.Lon = userCoordinate.Lon;
 
                     Update(user);
                 }
